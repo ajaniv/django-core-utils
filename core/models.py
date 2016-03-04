@@ -52,8 +52,10 @@ def app_table_name(app_name, table_name, site_label=None):
     site_label = site_label or constants.SITE_LABEL
     return '{}_{}_{}'.format(site_label, app_name, table_name)
 
+# @TODO: Does not work  in Django 1.9; options not incorporated into migration
 
-def meta(meta_base_classes,  app_label=None):
+
+def meta(meta_base_classes, app_label=None, **kwargs):
     """
     Tweak  meta attributes.
     """
@@ -78,6 +80,7 @@ def meta(meta_base_classes,  app_label=None):
                 meta_base = meta_base_classes
         else:
             meta_base = (object, )
+        meta_attrs.update(kwargs)
         meta = type('Meta', meta_base, meta_attrs)
         _meta = cls._meta
         _meta.db_table = meta.db_table
@@ -89,9 +92,9 @@ def meta(meta_base_classes,  app_label=None):
     return wrapped
 
 
-class BusinessObjectManager(models.Manager):
+class VersionedObjectManager(models.Manager):
     """
-    Business object manager class.
+    Versioned object manager class.
     """
 
     def get_or_none(self, *args, **kwargs):
@@ -123,15 +126,15 @@ class BusinessObjectManager(models.Manager):
         return user
 
 
-class BusinessObject(models.Model):
+class VersionedObject(models.Model):
     """
-    An abstract base class for application business objects.
+    An abstract base class for application object versioning.
     """
     class Meta(object):
         abstract = True
         get_latest_by = 'update_time'
 
-    objects = BusinessObjectManager()
+    objects = VersionedObjectManager()
     id = fields.auto_field()
     uuid = fields.uuid_field()
     version = fields.integer_field()
@@ -151,7 +154,7 @@ class BusinessObject(models.Model):
         related_name="%(app_label)s_%(class)s_related_site")
 
     def __init__(self, *args, **kwargs):
-        super(BusinessObject, self).__init__(*args, **kwargs)
+        super(VersionedObject, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         """
@@ -161,10 +164,10 @@ class BusinessObject(models.Model):
         update_user = kwargs.pop('update_user', None)
         if update_user is not None:
             self.update_user = update_user
-        super(BusinessObject, self).save(*args, **kwargs)
+        super(VersionedObject, self).save(*args, **kwargs)
 
 
-class NamedObjectManager(BusinessObjectManager):
+class NamedObjectManager(VersionedObjectManager):
     '''
     Named object manager class.
     '''
@@ -180,18 +183,21 @@ class NamedObjectManager(BusinessObjectManager):
             return self.get(name=constants.UNKNOWN)
 
 
-class NamedObject(BusinessObject):
+class NamedObject(VersionedObject):
     '''
-    Abstraction for named instances.
+    Abstract base class for named model instances.
+
+    Designed to facilitate the capture of static reference data
+    types such as countries, currencies, and languages.
     '''
-    class Meta(BusinessObject.Meta):
+    class Meta(VersionedObject.Meta):
         abstract = True
         ordering = ("name",)
 
     objects = NamedObjectManager()
     name = fields.name_field()
     alias = fields.name_field(blank=True, null=True, unique=False)
-    description = fields.description_field()
+    description = fields.description_field(blank=True, null=True)
 
     @property
     def display_name(self):
@@ -199,3 +205,5 @@ class NamedObject(BusinessObject):
 
     def __str__(self):
         return self.display_name
+
+

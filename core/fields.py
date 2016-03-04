@@ -7,10 +7,15 @@ designed to foster common field usage and facilitate configuration changes.
 """
 import uuid
 import inflection
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.core import validators
+
+from timezone_field import TimeZoneField
 from macaddress.fields import MACAddressField
+from phonenumber_field.modelfields import PhoneNumberField
 
 from utils.core import class_name
 
@@ -249,8 +254,8 @@ def annotation_field(**kwargs):
     Return a new instance of annotation model field.
     """
     defaults = dict(
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         unique=False)
     defaults.update(kwargs)
     return text_field(**defaults)
@@ -261,8 +266,8 @@ def description_field(**kwargs):
     Return a new instance of description model field.
     """
     defaults = dict(
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         unique=False)
     defaults.update(kwargs)
     return text_field(**defaults)
@@ -364,3 +369,72 @@ def user_agent_field(**kwargs):
         max_length=USER_AGENT_FIELD_MAX_LENGTH)
     defaults.update(kwargs)
     return char_field(**defaults)
+
+# @TODO: revisit approach for default time zone field
+DEFAULT_TIME_ZONE = 'America/New_York'
+
+
+def time_zone_field(**kwargs):
+    """
+    Create time zone field instance
+    """
+    defaults = dict(
+        null=False,
+        blank=False,
+        default=DEFAULT_TIME_ZONE)
+    defaults.update(kwargs)
+    return TimeZoneField(**defaults)
+
+
+def phone_number_field(**kwargs):
+    """
+    Create phone number field instance
+    """
+    defaults = dict(
+        null=False,
+        blank=False)
+    defaults.update(kwargs)
+    return PhoneNumberField(**defaults)
+
+
+def email_field(**kwargs):
+    """
+    Create email field instance
+    """
+    defaults = dict(
+        null=False,
+        blank=False)
+    defaults.update(kwargs)
+    return models.EmailField(**defaults)
+
+_im_schemes = ["im", "xmpp"]
+
+
+def instance_messaging_field(**kwargs):
+    """
+    Create instance messaging field instance
+    """
+    defaults = dict(
+        null=False,
+        blank=False,
+        validators=[validators.URLValidator(schemes=_im_schemes)])
+    defaults.update(kwargs)
+    return url_field(**defaults)
+
+_url_schemes = ['http', 'https', 'ftp', 'ftps']
+_other_schemes = ['tel', 'mailto', 'urn']
+_uri_schemes = _im_schemes + _url_schemes + _other_schemes
+
+
+def uri_field(**kwargs):
+    """
+    Create uri field instance.
+
+    Generic uri capture and validation.
+    """
+    defaults = dict(
+        null=False,
+        blank=False,
+        validators=[validators.URLValidator(schemes=_uri_schemes)])
+    defaults.update(kwargs)
+    return url_field(**defaults)
