@@ -54,7 +54,7 @@ def file_field(upload_to, **kwargs):
     """
     return models.FileField(upload_to=upload_to, **kwargs)
 
-CHAR_FIELD_MAX_LENGTH = 64
+CHAR_FIELD_MAX_LENGTH = 1024
 
 
 def char_field(**kwargs):
@@ -221,7 +221,7 @@ def text_field(**kwargs):
     defaults.update(kwargs)
     return models.TextField(**defaults)
 
-URL_FIELD_MAX_LENGTH = 200
+URL_FIELD_MAX_LENGTH = 255
 
 
 def url_field(**kwargs):
@@ -332,7 +332,7 @@ def mac_address_field(**kwargs):
     defaults.update(kwargs)
     return MACAddressField(**defaults)
 
-NAME_FIELD_MAX_LENGTH = 256
+NAME_FIELD_MAX_LENGTH = 255
 
 
 def name_field(**kwargs):
@@ -438,3 +438,13 @@ def uri_field(**kwargs):
         validators=[validators.URLValidator(schemes=_uri_schemes)])
     defaults.update(kwargs)
     return url_field(**defaults)
+
+
+def priority_field(**kwargs):
+    """
+    Create a priority field instance
+    """
+    defaults = dict(
+        default=0)
+    defaults.update(kwargs)
+    return models.PositiveSmallIntegerField(**defaults)

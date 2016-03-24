@@ -92,7 +92,7 @@ def meta(meta_base_classes, app_label=None, **kwargs):
     return wrapped
 
 
-class VersionedObjectManager(models.Manager):
+class VersionedModelManager(models.Manager):
     """
     Versioned object manager class.
     """
@@ -126,7 +126,7 @@ class VersionedObjectManager(models.Manager):
         return user
 
 
-class VersionedObject(models.Model):
+class VersionedModel(models.Model):
     """
     An abstract base class for application object versioning.
     """
@@ -134,7 +134,7 @@ class VersionedObject(models.Model):
         abstract = True
         get_latest_by = 'update_time'
 
-    objects = VersionedObjectManager()
+    objects = VersionedModelManager()
     id = fields.auto_field()
     uuid = fields.uuid_field()
     version = fields.integer_field()
@@ -154,7 +154,7 @@ class VersionedObject(models.Model):
         related_name="%(app_label)s_%(class)s_related_site")
 
     def __init__(self, *args, **kwargs):
-        super(VersionedObject, self).__init__(*args, **kwargs)
+        super(VersionedModel, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         """
@@ -164,10 +164,10 @@ class VersionedObject(models.Model):
         update_user = kwargs.pop('update_user', None)
         if update_user is not None:
             self.update_user = update_user
-        super(VersionedObject, self).save(*args, **kwargs)
+        super(VersionedModel, self).save(*args, **kwargs)
 
 
-class NamedObjectManager(VersionedObjectManager):
+class NamedModelManager(VersionedModelManager):
     '''
     Named object manager class.
     '''
@@ -183,18 +183,18 @@ class NamedObjectManager(VersionedObjectManager):
             return self.get(name=constants.UNKNOWN)
 
 
-class NamedObject(VersionedObject):
+class NamedModel(VersionedModel):
     '''
     Abstract base class for named model instances.
 
     Designed to facilitate the capture of static reference data
     types such as countries, currencies, and languages.
     '''
-    class Meta(VersionedObject.Meta):
+    class Meta(VersionedModel.Meta):
         abstract = True
         ordering = ("name",)
 
-    objects = NamedObjectManager()
+    objects = NamedModelManager()
     name = fields.name_field()
     alias = fields.name_field(blank=True, null=True, unique=False)
     description = fields.description_field(blank=True, null=True)
@@ -207,3 +207,12 @@ class NamedObject(VersionedObject):
         return self.display_name
 
 
+class PrioritizedModel(models.Model):
+    """
+    An abstract base class for models requiring associating
+    a priority with an instance.
+    """
+    class Meta(object):
+        abstract = True
+
+    priority = fields.priority_field()
