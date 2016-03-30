@@ -5,6 +5,8 @@
 The *fields* module is a collection of Django model fields utilities
 designed to foster common field usage and facilitate configuration changes.
 """
+from __future__ import absolute_import
+
 import uuid
 import inflection
 
@@ -12,6 +14,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.core import validators
+from django.utils.translation import gettext as _
 
 from timezone_field import TimeZoneField
 from macaddress.fields import MACAddressField
@@ -30,6 +33,8 @@ def auto_field(**kwargs):
     Return a new instance of auto increment model field.
     """
     defaults = dict(
+        blank=True,
+        null=False,
         primary_key=True,
         unique=True)
     defaults.update(kwargs)
@@ -41,7 +46,7 @@ def boolean_field(**kwargs):
     Return a new instance of boolean model field.
     """
     defaults = dict(
-        blank=True,
+        blank=False,
         null=False,
         default=False)
     defaults.update(kwargs)

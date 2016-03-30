@@ -1,0 +1,11 @@
+Babel==2.2.0
+Django==1.9.4
+django-macaddress==1.3.2
+django-phonenumber-field==1.0.0
+django-timezone-field==1.3
+inflection==0.3.1
+netaddr==0.7.18
+phonenumbers==7.2.6
+Pillow==3.1.1
+-e git://github.com/ajaniv/python-utils@v0.1.0-alpha#egg=python_utils
+pytz==2015.7

@@ -1,5 +1,5 @@
 """
-.. module:: core.constants
+.. module:: django_core_utils.constants
    :synopsis: django-utils core constants module.
 
 django-utils core constants module.

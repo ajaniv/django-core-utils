@@ -4,13 +4,13 @@
 
 Shared Django-utils core  models module.
 """
+from __future__ import absolute_import
 import logging
 import inflection
 
-import django.utils.functional
 from django.contrib.sites.models import Site
 from django.utils.translation import gettext as _
-from django.contrib.auth.models import User
+
 from django.db import models
 
 from utils.core import class_name
@@ -21,55 +21,57 @@ from . import constants
 logger = logging.getLogger(__name__)
 
 
-def verbose(class_name):
-    '''
-    Generate verbose name from class name.
-    '''
+def verbose_class_name(class_name):
+    """Generate verbose name from class name.
+    """
     verbose_name = inflection.underscore(class_name)
     verbose_name = verbose_name.replace('_', ' ')
     return verbose_name
 
 
 def pluralize(name):
-    '''
-    Pluralize a name.
-    '''
+    """Pluralize a name.
+    """
     return inflection.pluralize(name)
 
 
-def db_table_name(class_name):
-    '''
-    Convert class name to db table name.
-    '''
+def db_table_for_class(class_name):
+    """Convert class name to db table name.
+    """
     table_name = inflection.underscore(class_name)
     return table_name
 
 
-def app_table_name(app_name, table_name, site_label=None):
-    '''
-    Generate application table name
-    '''
+def db_table_for_app_and_class(app_name, table_name, site_label):
+    """Generate application table name.
+    """
     site_label = site_label or constants.SITE_LABEL
     return '{}_{}_{}'.format(site_label, app_name, table_name)
 
-# @TODO: Does not work  in Django 1.9; options not incorporated into migration
+
+def db_table(app_name, class_name, site_label=None):
+    """Generate db table name.
+    """
+    return db_table_for_app_and_class(
+        app_name, db_table_for_class(class_name), site_label)
 
 
 def meta(meta_base_classes, app_label=None, **kwargs):
+    """Tweak  meta attributes.
     """
-    Tweak  meta attributes.
-    """
+    # @TODO: Does not work  in Django 1.9; options not incorporated
+    # into migration
     def wrapped(cls):
         class_name_ = class_name(cls)
-        verbose_name = verbose(class_name_)
+        verbose_name = verbose_class_name(class_name_)
         plural_name = pluralize(verbose_name)
-        table_name = db_table_name(class_name_)
+        table_name = db_table_for_class(class_name_)
         meta_attrs = {
             '__module__': cls.__module__,
             'verbose_name': _(verbose_name),
             'verbose_name_plural': _(plural_name),
-            'db_table':  app_table_name(app_label, table_name)
-            }
+            'db_table': db_table_for_app_and_class(app_label, table_name)
+        }
         if app_label is not None:
             meta_attrs['app_label'] = app_label
 
@@ -93,13 +95,11 @@ def meta(meta_base_classes, app_label=None, **kwargs):
 
 
 class VersionedModelManager(models.Manager):
-    """
-    Versioned object manager class.
+    """Versioned object manager class.
     """
 
     def get_or_none(self, *args, **kwargs):
-        """
-        Return an object instance or none.
+        """Return an object instance or none.
 
         :param args: Positional argument list.
         :type args: list.
@@ -112,23 +112,9 @@ class VersionedModelManager(models.Manager):
         except self.model.DoesNotExist:
             return None
 
-    def effective_user(self, user):
-        '''
-        Return real user id.
-
-        This is a tactical implementation until proper auth
-        is implemented
-        '''
-        valid_users = ['admin', 'test_user']
-        if (isinstance(user, django.utils.functional.SimpleLazyObject)
-            or user is None):  # @IgnorePep8
-            user = User.objects.filter(username__in=valid_users)[0]
-        return user
-
 
 class VersionedModel(models.Model):
-    """
-    An abstract base class for application object versioning.
+    """An abstract base class for application object versioning.
     """
     class Meta(object):
         abstract = True
@@ -143,11 +129,17 @@ class VersionedModel(models.Model):
     creation_time = fields.datetime_field(auto_now_add=True)
     update_time = fields.datetime_field(auto_now=True)
 
+    # user who created the instance
     creation_user = fields.user_field(
         related_name="%(app_label)s_%(class)s_related_creation_user")
 
+    # user who triggered the instance update
     update_user = fields.user_field(
         related_name="%(app_label)s_%(class)s_related_update_user")
+
+    # user on whose behalf change is made
+    effective_user = fields.user_field(
+        related_name="%(app_label)s_%(class)s_related_effective_user")
 
     site = fields.foreign_key_field(
         Site,
@@ -157,24 +149,24 @@ class VersionedModel(models.Model):
         super(VersionedModel, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        """
-        Save an instance
+        """Save an instance.
         """
         self.version += 1
-        update_user = kwargs.pop('update_user', None)
+        update_user = kwargs.pop("update_user", None)
         if update_user is not None:
             self.update_user = update_user
+        effective_user = kwargs.pop("effective_user", None)
+        if update_user is not None:
+            self.effective_user = effective_user
         super(VersionedModel, self).save(*args, **kwargs)
 
 
 class NamedModelManager(VersionedModelManager):
-    '''
-    Named object manager class.
-    '''
+    """Named object manager class.
+    """
     def named_instance(self, name):
-        '''
-        Find a named instance.
-        '''
+        """Find a named instance.
+        """
         try:
             return self.get(name=name)
         except self.model.DoesNotExist:
@@ -184,12 +176,11 @@ class NamedModelManager(VersionedModelManager):
 
 
 class NamedModel(VersionedModel):
-    '''
-    Abstract base class for named model instances.
+    """Abstract base class for named model instances.
 
     Designed to facilitate the capture of static reference data
     types such as countries, currencies, and languages.
-    '''
+    """
     class Meta(VersionedModel.Meta):
         abstract = True
         ordering = ("name",)
@@ -208,9 +199,8 @@ class NamedModel(VersionedModel):
 
 
 class PrioritizedModel(models.Model):
-    """
-    An abstract base class for models requiring associating
-    a priority with an instance.
+    """An abstract base class for models requiring priority.
+    Associate a priority with an instance.
     """
     class Meta(object):
         abstract = True
