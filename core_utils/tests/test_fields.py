@@ -90,7 +90,9 @@ class DecimalFieldTestCase(FieldTestCase):
 
 
 class MyModel(models.Model):
+    """Model test class."""
     class Meta(object):
+        """Model meta class."""
         app_label = 'test_fields'
 
 
@@ -100,7 +102,7 @@ class ForeignKeyFieldTestCase(FieldTestCase):
     """
     def test_foreign_key_field_create(self):
         field = self._assert_create(fields.foreign_key_field,
-                                    to=MyModel)
+                                    to_class=MyModel)
 
         self.assertEqual(field.related_model.__name__, MyModel.__name__)
 
@@ -111,7 +113,7 @@ class ManyToManyFieldTestCase(FieldTestCase):
     """
     def test_many_to_many_field_create(self):
         field = self._assert_create(fields.many_to_many_field,
-                                    to=MyModel, db_table='dummy')
+                                    to_class=MyModel, db_table='dummy')
 
         self.assertEqual(field.related_model.__name__, MyModel.__name__)
 
@@ -122,7 +124,7 @@ class OneToOneFieldTestCase(FieldTestCase):
     """
     def test_one_to_one_field_create(self):
         field = self._assert_create(fields.one_to_one_field,
-                                    to=MyModel)
+                                    to_class=MyModel)
 
         self.assertEqual(field.related_model.__name__, MyModel.__name__)
 

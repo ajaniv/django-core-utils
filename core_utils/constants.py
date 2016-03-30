@@ -1,9 +1,9 @@
 """
-.. module:: django_core_utils.constants
-   :synopsis: django-utils core constants module.
+.. module:: core_utils.constants
+   :synopsis: django-core-utils core constants module.
 
-django-utils core constants module.
-The *constants* contains public constant definitions.
+core_utils core constants module.
+The *constants* module contains public constant definitions.
 
 """
 

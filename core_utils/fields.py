@@ -29,8 +29,7 @@ from utils.core import class_name
 
 
 def auto_field(**kwargs):
-    """
-    Return a new instance of auto increment model field.
+    """Return a new instance of auto increment model field.
     """
     defaults = dict(
         blank=True,
@@ -42,8 +41,7 @@ def auto_field(**kwargs):
 
 
 def boolean_field(**kwargs):
-    """
-    Return a new instance of boolean model field.
+    """Return a new instance of boolean model field.
     """
     defaults = dict(
         blank=False,
@@ -63,8 +61,7 @@ CHAR_FIELD_MAX_LENGTH = 1024
 
 
 def char_field(**kwargs):
-    """
-    Return a new instance of char model field.
+    """Return a new instance of char model field.
     """
     defaults = dict(
         max_length=CHAR_FIELD_MAX_LENGTH,
@@ -76,8 +73,7 @@ def char_field(**kwargs):
 
 
 def date_field(**kwargs):
-    """
-    Return a new instance of date model field.
+    """Return a new instance of date model field.
     """
     defaults = dict(auto_now=False,
                     auto_now_add=False,
@@ -88,8 +84,7 @@ def date_field(**kwargs):
 
 
 def datetime_field(**kwargs):
-    """
-    Return a new instance of datetime model field.
+    """Return a new instance of datetime model field.
     """
     defaults = dict(auto_now=False,
                     auto_now_add=False,
@@ -100,8 +95,7 @@ def datetime_field(**kwargs):
 
 
 def decimal_field(max_digits, decimal_places, **kwargs):
-    """
-    Return a new instance of decimal model field.
+    """Return a new instance of decimal model field.
     """
     defaults = dict(
         decimal_places=decimal_places,
@@ -113,8 +107,7 @@ def decimal_field(max_digits, decimal_places, **kwargs):
 
 
 def floating_point_field(**kwargs):
-    """
-    Return a new instance of floating point model field.
+    """Return a new instance of floating point model field.
     """
     defaults = dict(
         blank=False,
@@ -124,9 +117,8 @@ def floating_point_field(**kwargs):
     return models.FloatField(**defaults)
 
 
-def foreign_key_field(to, **kwargs):
-    """
-    Return a new instance of foreign key model field.
+def foreign_key_field(to_class, **kwargs):
+    """Return a new instance of foreign key model field.
     """
     defaults = dict(
         blank=False,
@@ -135,19 +127,17 @@ def foreign_key_field(to, **kwargs):
         on_delete=models.PROTECT)
 
     defaults.update(kwargs)
-    return models.ForeignKey(to, **defaults)
+    return models.ForeignKey(to_class, **defaults)
 
 
 def image_field(**kwargs):
-    """
-    Return a new instance of image model field.
+    """Return a new instance of image model field.
     """
     return models.ImageField(**kwargs)
 
 
 def integer_field(**kwargs):
-    """
-    Return a new instance of integer model field.
+    """Return a new instance of integer model field.
     """
     defaults = dict(
         default=0,
@@ -157,8 +147,7 @@ def integer_field(**kwargs):
 
 
 def ip_address_field(**kwargs):
-    """
-    Return a new instance of ip address model field.
+    """Return a new instance of ip address model field.
     """
     defaults = dict(
         null=False,
@@ -167,9 +156,8 @@ def ip_address_field(**kwargs):
     return models.GenericIPAddressField(**defaults)
 
 
-def many_to_many_field(to, db_table, **kwargs):
-    """
-    Return a new instance of many to many model field.
+def many_to_many_field(to_class, db_table, **kwargs):
+    """Return a new instance of many to many model field.
     """
     defaults = dict(
         db_constraint=True,
@@ -181,18 +169,17 @@ def many_to_many_field(to, db_table, **kwargs):
 
     related_name = (
         related_name or
-        '{}_set'.format(inflection.camelize(class_name(to))))
+        '{}_set'.format(inflection.camelize(class_name(to_class))))
 
     return models.ManyToManyField(
-        to,
+        to_class,
         db_table=db_table,
         related_name=related_name,
         **defaults)
 
 
-def one_to_one_field(to, **kwargs):
-    """
-    Return a new instance of one-to-one model field.
+def one_to_one_field(to_class, **kwargs):
+    """Return a new instance of one-to-one model field.
     """
     defaults = dict(
         blank=False,
@@ -201,12 +188,11 @@ def one_to_one_field(to, **kwargs):
         on_delete=models.PROTECT)
 
     defaults.update(kwargs)
-    return models.OneToOneField(to, **defaults)
+    return models.OneToOneField(to_class, **defaults)
 
 
 def small_integer_field(**kwargs):
-    """
-    Return a new instance of small integer model field.
+    """Return a new instance of small integer model field.
     """
     defaults = dict(
         default=0,
@@ -216,8 +202,7 @@ def small_integer_field(**kwargs):
 
 
 def text_field(**kwargs):
-    """
-    Return a new instance of text model field.
+    """Return a new instance of text model field.
     """
     defaults = dict(
         blank=True,
@@ -230,8 +215,7 @@ URL_FIELD_MAX_LENGTH = 255
 
 
 def url_field(**kwargs):
-    """
-    Return a new instance of url model field.
+    """Return a new instance of url model field.
     """
     defaults = dict(
         max_length=URL_FIELD_MAX_LENGTH,
@@ -242,8 +226,7 @@ def url_field(**kwargs):
 
 
 def uuid_field(**kwargs):
-    """
-    Return a new instance of uuid model field.
+    """Return a new instance of uuid model field.
     """
     defaults = dict(
         unique=True,
@@ -255,8 +238,7 @@ def uuid_field(**kwargs):
 
 
 def annotation_field(**kwargs):
-    """
-    Return a new instance of annotation model field.
+    """Return a new instance of annotation model field.
     """
     defaults = dict(
         blank=False,
@@ -267,8 +249,7 @@ def annotation_field(**kwargs):
 
 
 def description_field(**kwargs):
-    """
-    Return a new instance of description model field.
+    """Return a new instance of description model field.
     """
     defaults = dict(
         blank=False,
@@ -282,8 +263,7 @@ GEO_LOCATION_DECIMAL_PLACES = 6
 
 
 def latitude_validator(value):
-    """
-    Latitude validation
+    """Perform latitude validation.
     """
     valid = -90 < value < 90
     if not valid:
@@ -292,8 +272,7 @@ def latitude_validator(value):
 
 
 def longitude_validator(value):
-    """
-    Longitude validation
+    """Perform longitude validation.
     """
     valid = -180 < value < 180
     if not valid:
@@ -302,8 +281,7 @@ def longitude_validator(value):
 
 
 def geo_location_field(**kwargs):
-    """
-    Return a new instance of geo location model field.
+    """Return a new instance of geo location model field.
     """
     defaults = dict(
         max_digits=GEO_LOCATION_MAX_DIGITS,
@@ -313,6 +291,8 @@ def geo_location_field(**kwargs):
 
 
 def longitude_field(**kwargs):
+    """Return new instance of longitude field.
+    """
     defaults = dict(
         validators=[longitude_validator])
     defaults.update(kwargs)
@@ -320,6 +300,8 @@ def longitude_field(**kwargs):
 
 
 def latitude_field(**kwargs):
+    """Return new instance of latitude field.
+    """
     defaults = dict(
         validators=[latitude_validator])
     defaults.update(kwargs)
@@ -327,8 +309,7 @@ def latitude_field(**kwargs):
 
 
 def mac_address_field(**kwargs):
-    """
-    Return a new instance of mac address model field.
+    """Return a new instance of mac address model field.
     """
     defaults = dict(
         unique=True,
@@ -341,8 +322,7 @@ NAME_FIELD_MAX_LENGTH = 255
 
 
 def name_field(**kwargs):
-    """
-    Return a new instance of name model field.
+    """Return a new instance of name model field.
     """
     defaults = dict(
         max_length=NAME_FIELD_MAX_LENGTH,
@@ -355,8 +335,7 @@ def name_field(**kwargs):
 
 
 def user_field(**kwargs):
-    """
-    Return a new instance of a user model field.
+    """Return a new instance of a user model field.
     """
     return foreign_key_field(User, **kwargs)
 
@@ -365,8 +344,7 @@ USER_AGENT_FIELD_MAX_LENGTH = 512
 
 
 def user_agent_field(**kwargs):
-    """
-    Return a new instance of user agent model field.
+    """Return a new instance of user agent model field.
     """
     defaults = dict(
         null=False,
@@ -380,8 +358,7 @@ DEFAULT_TIME_ZONE = 'America/New_York'
 
 
 def time_zone_field(**kwargs):
-    """
-    Create time zone field instance
+    """Create time zone field instance.
     """
     defaults = dict(
         null=False,
@@ -392,8 +369,7 @@ def time_zone_field(**kwargs):
 
 
 def phone_number_field(**kwargs):
-    """
-    Create phone number field instance
+    """Create phone number field instance.
     """
     defaults = dict(
         null=False,
@@ -403,8 +379,7 @@ def phone_number_field(**kwargs):
 
 
 def email_field(**kwargs):
-    """
-    Create email field instance
+    """Create email field instance.
     """
     defaults = dict(
         null=False,
@@ -416,8 +391,7 @@ _im_schemes = ["im", "xmpp"]
 
 
 def instance_messaging_field(**kwargs):
-    """
-    Create instance messaging field instance
+    """Create instance messaging field instance.
     """
     defaults = dict(
         null=False,
@@ -432,8 +406,7 @@ _uri_schemes = _im_schemes + _url_schemes + _other_schemes
 
 
 def uri_field(**kwargs):
-    """
-    Create uri field instance.
+    """Create uri field instance.
 
     Generic uri capture and validation.
     """
@@ -446,8 +419,7 @@ def uri_field(**kwargs):
 
 
 def priority_field(**kwargs):
-    """
-    Create a priority field instance
+    """Create a priority field instance.
     """
     defaults = dict(
         default=0)

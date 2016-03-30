@@ -22,6 +22,9 @@ TEST_USER_EMAIL = '{}@{}'.format(TEST_USER_NAME, TEST_DOMAIN)
 
 
 class TestCaseMixin(object):
+    """
+    Unit test mixin class.
+    """
     def file_path(self, file_name):
         return test_data_file_path(file_name)
 
@@ -45,6 +48,7 @@ class TestCaseMixin(object):
 
 
 class BaseAppDjangoTestCase(TestCaseMixin, TestCase):
+    """Base Django test case class"""
     def setUp(self):
         TestCaseMixin.setUp(self)
         TestCase.setUp(self)
@@ -154,12 +158,16 @@ class NamedInstanceTestCase(VersionedModelTestCase):
 
 
 def create_instances(klass, count, *args, **kwargs):
+    """Create instances for class."""
     objects = [klass(*args, **kwargs)
                for _ in range(count)]
     return objects
 
 
 def randam_ip(n):  # @UnusedVariable
+    """Return ramdon ip.
+    """
+
     not_valid = [10, 127, 169, 172, 192]
 
     first = randrange(1, 256)
@@ -172,22 +180,28 @@ def randam_ip(n):  # @UnusedVariable
 
 
 def create_named_instances(klass, names, *args, **kwargs):
+    """Create named instances utility function."""
     objects = [klass(short_name=name, full_name=name, *args, **kwargs)
                for name in names]
     return objects
 
 
 def generate_name(seed, index):
+    """Name generator function.
+    """
     base_name = inflection.underscore(seed).upper()
     return '{}_{}'.format(base_name, index)
 
 
 def generate_names(seed, count):
+    """Names generator function"""
     names = [generate_name(seed, index) for index in range(1, count + 1)]
     return names
 
 
 def test_data_file_path(file_name, dir_name=None):
+    """Return test data file path.
+    """
     try:
         dir_name = dir_name or settings.TEST_DATA_DIR
     except AttributeError:
@@ -196,4 +210,5 @@ def test_data_file_path(file_name, dir_name=None):
 
 
 def factory_class_name(model_class_name):
+    """Return factory class name from model class"""
     return model_class_name + 'Factory'

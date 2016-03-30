@@ -9,7 +9,7 @@ import logging
 import inflection
 
 from django.contrib.sites.models import Site
-from django.utils.translation import gettext as _
+
 
 from django.db import models
 
@@ -21,10 +21,10 @@ from . import constants
 logger = logging.getLogger(__name__)
 
 
-def verbose_class_name(class_name):
+def verbose_class_name(name):
     """Generate verbose name from class name.
     """
-    verbose_name = inflection.underscore(class_name)
+    verbose_name = inflection.underscore(name)
     verbose_name = verbose_name.replace('_', ' ')
     return verbose_name
 
@@ -35,10 +35,10 @@ def pluralize(name):
     return inflection.pluralize(name)
 
 
-def db_table_for_class(class_name):
+def db_table_for_class(name):
     """Convert class name to db table name.
     """
-    table_name = inflection.underscore(class_name)
+    table_name = inflection.underscore(name)
     return table_name
 
 
@@ -49,49 +49,11 @@ def db_table_for_app_and_class(app_name, table_name, site_label):
     return '{}_{}_{}'.format(site_label, app_name, table_name)
 
 
-def db_table(app_name, class_name, site_label=None):
-    """Generate db table name.
+def db_table(app_name, name, site_label=None):
+    """Generate db table name from app and class.
     """
     return db_table_for_app_and_class(
-        app_name, db_table_for_class(class_name), site_label)
-
-
-def meta(meta_base_classes, app_label=None, **kwargs):
-    """Tweak  meta attributes.
-    """
-    # @TODO: Does not work  in Django 1.9; options not incorporated
-    # into migration
-    def wrapped(cls):
-        class_name_ = class_name(cls)
-        verbose_name = verbose_class_name(class_name_)
-        plural_name = pluralize(verbose_name)
-        table_name = db_table_for_class(class_name_)
-        meta_attrs = {
-            '__module__': cls.__module__,
-            'verbose_name': _(verbose_name),
-            'verbose_name_plural': _(plural_name),
-            'db_table': db_table_for_app_and_class(app_label, table_name)
-        }
-        if app_label is not None:
-            meta_attrs['app_label'] = app_label
-
-        if meta_base_classes is not None:
-            if not isinstance(meta_base_classes, tuple):
-                meta_base = (meta_base_classes,)
-            else:
-                meta_base = meta_base_classes
-        else:
-            meta_base = (object, )
-        meta_attrs.update(kwargs)
-        meta = type('Meta', meta_base, meta_attrs)
-        _meta = cls._meta
-        _meta.db_table = meta.db_table
-        _meta.verbose_name = meta.verbose_name
-        _meta.verbose_name_plural = meta.verbose_name_plural
-        cls.Meta = meta
-        return cls
-
-    return wrapped
+        app_name, db_table_for_class(name), site_label)
 
 
 class VersionedModelManager(models.Manager):
@@ -117,6 +79,7 @@ class VersionedModel(models.Model):
     """An abstract base class for application object versioning.
     """
     class Meta(object):
+        """Meta class declaration."""
         abstract = True
         get_latest_by = 'update_time'
 
@@ -170,8 +133,9 @@ class NamedModelManager(VersionedModelManager):
         try:
             return self.get(name=name)
         except self.model.DoesNotExist:
-            logger.warn('Failed to retrieve instance of type (%s) named (%s)',
-                        class_name(self.model), name)
+            logger.warning(
+                'Failed to retrieve instance of type (%s) named (%s)',
+                class_name(self.model), name)
             return self.get(name=constants.UNKNOWN)
 
 
@@ -182,6 +146,7 @@ class NamedModel(VersionedModel):
     types such as countries, currencies, and languages.
     """
     class Meta(VersionedModel.Meta):
+        """Model meta class declaration."""
         abstract = True
         ordering = ("name",)
 
@@ -192,6 +157,7 @@ class NamedModel(VersionedModel):
 
     @property
     def display_name(self):
+        """Return display name."""
         return self.alias if self.alias else self.name
 
     def __str__(self):
@@ -203,6 +169,7 @@ class PrioritizedModel(models.Model):
     Associate a priority with an instance.
     """
     class Meta(object):
+        """Model meta class declaration."""
         abstract = True
 
     priority = fields.priority_field()

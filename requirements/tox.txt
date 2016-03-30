@@ -1,0 +1,4 @@
+# tox environment requirements file
+-r common.txt
+-r code_style.txt
+-r testing.txt

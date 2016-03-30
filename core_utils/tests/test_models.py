@@ -19,6 +19,7 @@ _app_label = 'test_inflection'
 
 
 class MyModel(VersionedModel):
+    """Sample model class."""
     class Meta(VersionedModel.Meta):
         app_label = _app_label
 

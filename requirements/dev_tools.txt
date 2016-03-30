@@ -1,0 +1,10 @@
+# dev tools
+-r code_style.txt
+-r testing.txt
+-r documentation.txt
+check-manifest==0.31
+django-debug-toolbar==1.4
+six==1.10.0
+python-dateutil==2.5.2
+#pygraphviz==1.3rc1
+tox==2.3.1

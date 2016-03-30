@@ -1,0 +1,6 @@
+# Code style requirements
+flake8==2.5.4
+pep8==1.7.0
+pylint==1.5.5
+# Sort and lint imports
+isort==4.2.5

@@ -4,7 +4,7 @@
 
 *django-utils* core factory module.
 """
-import uuid
+import uuid as _uuid
 import factory
 
 from django.contrib.auth.models import User
@@ -15,7 +15,9 @@ from ..models import VersionedModel, NamedModel
 
 
 class UserFactory(factory.DjangoModelFactory):
+    """User factory class."""
     class Meta(object):
+        """Model meta class."""
         model = User
         django_get_or_create = ('username',)
 
@@ -23,21 +25,38 @@ class UserFactory(factory.DjangoModelFactory):
 
     @staticmethod
     def create_users(count=1, prefix='test_user'):
+        """Create users method"""
         users = [UserFactory(username='%s_%d' % (prefix, index))
                  for index in range(1, count + 1)]
         return users
 
 
 class SiteFactory(factory.DjangoModelFactory):
+    """Site factory class."""
     class Meta(object):
+        """Model meta class."""
         model = Site
         django_get_or_create = ('id',)
 
     id = 1
 
 
+def model_class_name(factory_class):
+    """Return model class name for factory class.
+    """
+    return class_name(factory_class.Meta.model)
+
+
+def default_name(cls, number):
+    """Return a default name for given class.
+    """
+    return '{}_{}'.format(class_name(cls), number)
+
+
 class VersionedModelFactory(factory.DjangoModelFactory):
+    """Versioned model factory class."""
     class Meta(object):
+        """Model meta class."""
         model = VersionedModel
         abstract = True
         django_get_or_create = ('id', 'uuid')
@@ -50,34 +69,27 @@ class VersionedModelFactory(factory.DjangoModelFactory):
     deleted = False
 
     id = factory.Sequence(lambda n: n)
-    uuid = factory.Sequence(lambda _: uuid.uuid4())
+    uuid = factory.Sequence(lambda _: _uuid.uuid4())
+
+    @classmethod
+    def model_class_name(cls):
+        """Return model class name."""
+        return model_class_name(cls)
 
     @staticmethod
-    def create_names():
-        pass
-
-    @staticmethod
-    def create_instances():
-        pass
-
-
-def model_class_name(factory_class):
-    return class_name(factory_class.FACTORY_FOR)
-
-
-def default_name(cls, n):
-    return '{}_{}'.format(class_name(cls), n)
+    def default_name(number):
+        """Return default name.
+        """
+        return '{}_{}'.format(model_class_name(), number)
 
 
 class NamedModelFactory(VersionedModelFactory):
+    """Named model factory class."""
     class Meta(object):
+        """Model meta class."""
         model = NamedModel
         abstract = True
         django_get_or_create = ('name',)
 
-    name = factory.Sequence(lambda n: NamedModelFactory.default_name(n))
-    alias = factory.Sequence(lambda n: NamedModelFactory.default_name(n))
-
-    @staticmethod
-    def default_name(n):
-        return '{}_{}'.format(class_name(NamedModelFactory.Meta.model), n)
+    name = factory.Sequence(lambda n: VersionedModelFactory.default_name(n))
+    alias = factory.Sequence(lambda n: VersionedModelFactory.default_name(n))
