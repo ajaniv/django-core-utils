@@ -1,7 +1,5 @@
 # testing tools requirements
 coverage==4.0.3
 factory_boy==2.6.1
-six==1.10.0
-python-dateutil==2.5.2
 mock==1.3.0
 
