@@ -36,7 +36,14 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['Django>=1.9.0'],
+    install_requires=[
+        'Django>=1.9.0',
+        'inflection>=0.3.1',
+        'django-macaddress>=1.3.2',
+        'django-phonenumber-field>=1.0.0',
+        'django-timezone-field>=1.3',
+        'phonenumbers==7.2.6'
+    ],
     extras_require={
         'dev': ['check-manifest'],
         'test': ['coverage'],
