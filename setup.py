@@ -15,6 +15,8 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
+_git_url_root = 'git+ssh://git@github.com/ajaniv/'
+
 setup(
     name='django-utils',
     version='0.1.0',
@@ -37,7 +39,7 @@ setup(
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
-        'python-utils',
+        'python-core-utils',
         'Django>=1.9.0',
         'inflection>=0.3.1',
         'django-macaddress>=1.3.2',
@@ -46,7 +48,7 @@ setup(
         'phonenumbers==7.2.6',
     ],
     dependency_links=[
-        'git+ssh://git@github.com/ajaniv/python-utils@v0.1.0#egg=python_utils'
+        _git_url_root + 'python-core-utils@v0.1.0#egg=python-core-utils'
     ],
     extras_require={
         'dev': ['check-manifest'],

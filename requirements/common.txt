@@ -7,6 +7,6 @@ inflection==0.3.1
 netaddr==0.7.18
 phonenumbers==7.2.6
 Pillow==3.1.1
--e git://github.com/ajaniv/python-utils@v0.1.0#egg=python_utils
+-e git://github.com/ajaniv/python-core-utils@v0.1.0#egg=python-core-utils
 pytz==2015.7
 virtualenv==15.0.1
