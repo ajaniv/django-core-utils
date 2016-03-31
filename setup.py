@@ -37,12 +37,16 @@ setup(
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
+        'python-utils',
         'Django>=1.9.0',
         'inflection>=0.3.1',
         'django-macaddress>=1.3.2',
         'django-phonenumber-field>=1.0.0',
         'django-timezone-field>=1.3',
-        'phonenumbers==7.2.6'
+        'phonenumbers==7.2.6',
+    ],
+    dependency_links=[
+        'git+ssh://git@github.com/ajaniv/python-utils@v0.1.0#egg=python_utils'
     ],
     extras_require={
         'dev': ['check-manifest'],
