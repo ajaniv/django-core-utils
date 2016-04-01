@@ -68,10 +68,10 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
 
     def verify_instances(self, instances,
                          count=1, version=1, **kwargs):
+        msg = "instance count error; expected:{} allocated:{}"
         self.assertEqual(
             len(instances), count,
-            'error:  instance count error; expected:%d allocated:%d' % (
-             count, len(instances)))
+            msg.format(count, len(instances)))
 
         for index, instance in enumerate(instances):
             self.verify_id(index, instance)
@@ -127,11 +127,11 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
                     instance_class_name(obj),
                     attr, attr_value, index))
         self.assertTrue(
-                 obj.creation_time <= obj.update_time,
-                 msg_value.format(
-                     instance_class_name(obj),
-                     obj.creation_time.microsecond,
-                     obj.update_time.microsecond, index))
+            obj.creation_time <= obj.update_time,
+            msg_value.format(
+                instance_class_name(obj),
+                obj.creation_time.microsecond,
+                obj.update_time.microsecond, index))
 
     def verify_users(self, index, obj):
         """Verify users."""
@@ -142,8 +142,8 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
             self.assertEqual(
                 usr.username, user_name,
                 msg.format(
-                           instance_class_name(obj),
-                           attr, usr.username, index))
+                    instance_class_name(obj),
+                    attr, usr.username, index))
 
     def verify_enabled(self, index, obj, expected=True):
         """Verify instance enabled."""
@@ -218,7 +218,7 @@ class NamedModelTestCase(VersionedModelTestCase):
             instances, count, version, **kwargs)
 
         for index, instance in enumerate(instances):
-            self.verify_named_instance(index,  instance)
+            self.verify_named_instance(index, instance)
 
     def verify_named_instance(self, index, obj):
         """Verify a named instance"""
@@ -229,10 +229,9 @@ class NamedModelTestCase(VersionedModelTestCase):
             attr_value = getattr(obj, attr)
             self.assertTrue(
                 attr_value is None,
-                '{} {} is not  None at {}'.format(
-                                                 instance_class_name(obj),
-                                                 attr,
-                                                 index))
+                '{} {} is not  None at {}'.format(instance_class_name(obj),
+                                                  attr,
+                                                  index))
 
     def verify_name(self, index, obj):
         """Verify name field.
@@ -240,8 +239,6 @@ class NamedModelTestCase(VersionedModelTestCase):
         self.assertTrue(
             obj.name,
             '{} name is None at {}'.format(instance_class_name(obj), index))
-
-
 
 
 def create_instances(klass, count, *args, **kwargs):
