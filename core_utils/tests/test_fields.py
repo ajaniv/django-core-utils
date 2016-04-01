@@ -4,11 +4,12 @@
 
 *django-utils* fields unit test module.
 """
-from __future__ import print_function
-from inspect import getmembers, isfunction, getargspec
+from __future__ import absolute_import, print_function
 
-from django.db import models
+from inspect import getargspec, getmembers, isfunction
+
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.test import TestCase
 
 from .. import fields

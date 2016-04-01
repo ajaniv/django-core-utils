@@ -4,16 +4,18 @@
     :synopsis: Unit test utilities module
 
 """
+from __future__ import absolute_import, print_function
 
 import os
-import inflection
 from random import randrange
 
+import inflection
 from django.conf import settings
 from django.test import TestCase
+from utils.core import instance_class_name
 
-from ..utils import current_site
 from . import factories
+from ..utils import current_site
 
 TEST_DOMAIN = 'ondalear.com'
 TEST_USER_NAME = 'test_user'
@@ -59,46 +61,115 @@ class BaseAppDjangoTestCase(TestCaseMixin, TestCase):
 
 
 class VersionedModelTestCase(BaseAppDjangoTestCase):
-    pass
-#     def verify_instance(self, class_name, objects,
-#                         count=1, version=1, **kwargs):
-#         self.assertEqual(len(objects), count,
-#             '%s error:  instance count error; expected:%d allocated:%d' % (
-#                 class_name, count, len(objects)))
-#
-#         for index, obj in enumerate(objects):
-#             self.verify_instance_enabled(class_name, index, obj)
-#             self.assertFalse(obj.deleted,
-#                 '%s error: instance is deleted ' % class_name)
-#             self.assertEqual(obj.version, version,
-#                 '%s error: instance version %d' % (
-#                         class_name, obj.version))
-#
-#             self.verify_instance_name(class_name, index,  obj)
-#
-#             self.assertEqual(
-#                 obj.creation_user.username, obj.update_user.username,
-#                 '%s error: user  mismatch full: %s short: %s' % (
-#                     class_name, obj.creation_user.username,
-#                     obj.update_user.username))
-#
-#             self.assertTrue(
-#                 obj.creation_time <= obj.update_time,
-#                 '%s error: time mismatch creation: %s update: %s' % (
-#                     class_name, obj.creation_time.microsecond,
-#                     obj.update_time.microsecond))
-#
-#             self.verify_derived(class_name, index, obj)
-#
-#     def verify_derived(self, class_name, index, obj):
-#         pass
-#
-#     def verify_instance_name(self, *args, **kwargs):
-#         pass
-#
-#     def verify_instance_enabled(self, class_name, index, obj):
-#         self.assertTrue(obj.enabled,
-#             '%s error: instance not enabled' % class_name)
+    """Versioned model unit test class.
+    """
+    def verify_instance(self, instance, version=1, **kwargs):
+        self.verify_instances([instance], version, **kwargs)
+
+    def verify_instances(self, instances,
+                         count=1, version=1, **kwargs):
+        self.assertEqual(
+            len(instances), count,
+            'error:  instance count error; expected:%d allocated:%d' % (
+             count, len(instances)))
+
+        for index, instance in enumerate(instances):
+            self.verify_id(index, instance)
+            self.verify_get(index, instance)
+            self.verify_uuid(index, instance)
+            self.verify_timestamps(index, instance)
+            self.verify_users(index, instance)
+            self.verify_version(index, instance, version)
+            self.verify_enabled(index, instance, True)
+            self.verify_deleted(index, instance, False)
+            self.verify_derived(index, instance)
+
+    def _attribute_msg(self, obj, attribute, index, expected):
+        msg = '({}): invalid instance.{}({}) at index({}) expected({})'
+        return msg.format(instance_class_name(obj),
+                          attribute,
+                          getattr(obj, attribute),
+                          index, expected)
+
+    def verify_id(self, index, obj):
+        """Verify instance id."""
+        msg = '({}): invalid instance.{}({}) at index({})'
+        self.assertTrue(
+            obj.id is not None,
+            msg.format(instance_class_name(obj), 'id', obj.id, index))
+
+    def verify_get(self, index, obj):
+        """
+        Verify instance database fetch using get
+        """
+        msg = '({}): invalid instance.{}({}) at index({})'
+        db_instance = obj.__class__.objects.get_or_none(pk=obj.id)
+        self.assertTrue(
+            db_instance,
+            msg.format(instance_class_name(obj), 'id', obj.id, index))
+
+    def verify_uuid(self, index, obj):
+        """Verify instance uuid."""
+        msg = '({}): invalid instance.{}({}) at index({})'
+        self.assertTrue(
+            obj.uuid is not None,
+            msg.format(instance_class_name(obj), 'uuid', obj.uuid, index))
+
+    def verify_timestamps(self, index, obj):
+        """Verify instance timestamps."""
+        msg_set = '({}): invalid instance.{}({}) at index({})'
+        msg_value = '{}: time mismatch creation:{} update:{} at index({})'
+        for attr in ('creation_time', 'update_time'):
+            attr_value = getattr(obj, attr)
+            self.assertTrue(
+                attr_value,
+                msg_set.format(
+                    instance_class_name(obj),
+                    attr, attr_value, index))
+        self.assertTrue(
+                 obj.creation_time <= obj.update_time,
+                 msg_value.format(
+                     instance_class_name(obj),
+                     obj.creation_time.microsecond,
+                     obj.update_time.microsecond, index))
+
+    def verify_users(self, index, obj):
+        """Verify users."""
+        msg = '({}): invalid instance.{}({}) at index({})'
+        user_name = self.username
+        for attr in ('creation_user', 'update_user', 'effective_user'):
+            usr = getattr(obj, attr)
+            self.assertEqual(
+                usr.username, user_name,
+                msg.format(
+                           instance_class_name(obj),
+                           attr, usr.username, index))
+
+    def verify_enabled(self, index, obj, expected=True):
+        """Verify instance enabled."""
+        self.assertEqual(
+            obj.enabled, expected,
+            self._attribute_msg(obj, 'enabled', index, expected))
+
+    def verify_deleted(self, index, obj, expected=False):
+        """Verify instance deleted."""
+        self.assertEqual(
+            obj.deleted, expected,
+            self._attribute_msg(obj, 'deleted', index, expected))
+
+    def verify_version(self, index, obj, expected=1):
+        """Verify instance version."""
+        self.assertEqual(
+            obj.version, expected,
+            self._attribute_msg(obj, 'version', index, expected))
+
+    def verify_derived(self, index, obj):
+        """
+        Verify derived instances.
+        Designed for sub class implementation.
+        """
+        pass
+
 #
 #     def check_creation(self, model_class_name, count=1, version=1, **kwargs):
 #         klass = self.factory_for(model_class_name)
@@ -140,21 +211,37 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
 #             self.assertTrue(update_1_obj.version == saved_version + 1)
 
 
-class NamedInstanceTestCase(VersionedModelTestCase):
-    pass
+class NamedModelTestCase(VersionedModelTestCase):
+    def verify_instances(self, instances,
+                         count=1, version=1, **kwargs):
+        super(NamedModelTestCase, self).verify_instances(
+            instances, count, version, **kwargs)
 
-#     def verify_instance_name(self, class_name, index, obj):
-#         self.assertTrue(obj.full_name  is not None,
-#                 '%s error: instance full name is None')
-#         self.assertTrue(obj.short_name is not None,
-#                 '%s error: short name is None')
-#         self.assertEqual(obj.full_name, obj.short_name,
-#             '%s error: instance name mismatch full: %s short: %s' % (
-#                     class_name, obj.full_name, obj.short_name))
-#         self.assertEqual(obj.short_name,
-#                generate_name(class_name, index + 1),
-#             '%s error: invalid names full: %s short: %s' % (
-#                     class_name, obj.full_name, obj.short_name))
+        for index, instance in enumerate(instances):
+            self.verify_named_instance(index,  instance)
+
+    def verify_named_instance(self, index, obj):
+        """Verify a named instance"""
+        for method in (self.verify_name,):
+            method(index, obj)
+
+        for attr in ('alias', 'description'):
+            attr_value = getattr(obj, attr)
+            self.assertTrue(
+                attr_value is None,
+                '{} {} is not  None at {}'.format(
+                                                 instance_class_name(obj),
+                                                 attr,
+                                                 index))
+
+    def verify_name(self, index, obj):
+        """Verify name field.
+        """
+        self.assertTrue(
+            obj.name,
+            '{} name is None at {}'.format(instance_class_name(obj), index))
+
+
 
 
 def create_instances(klass, count, *args, **kwargs):

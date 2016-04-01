@@ -6,14 +6,12 @@
  abstract models are implemented in a separate project due
  to Django not  handling of dynamic model db table creation.
 """
-from __future__ import print_function
-
-from ..models import VersionedModel
+from __future__ import absolute_import, print_function
 
 from django.test import TestCase
 
-from ..models import verbose_class_name, pluralize, db_table_for_class
-from ..models import db_table_for_app_and_class, db_table
+from ..models import (VersionedModel, db_table, db_table_for_app_and_class,
+                      db_table_for_class, pluralize, verbose_class_name)
 
 _app_label = 'test_inflection'
 
