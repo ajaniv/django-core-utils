@@ -8,19 +8,18 @@ designed to foster common field usage and facilitate configuration changes.
 from __future__ import absolute_import
 
 import uuid
-import inflection
 
-from django.db import models
-from django.core.exceptions import ValidationError
+import inflection
 from django.contrib.auth.models import User
 from django.core import validators
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils.translation import gettext as _
-
-from timezone_field import TimeZoneField
 from macaddress.fields import MACAddressField
 from phonenumber_field.modelfields import PhoneNumberField
-
+from timezone_field import TimeZoneField
 from utils.core import class_name
+
 
 # Note: each factory function has '_field' suffix to minimize conflicts with
 # core and 3rd party python modules and foster naming consistency albeit

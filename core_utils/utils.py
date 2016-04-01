@@ -5,8 +5,8 @@
 The *utils* module is a collection of Django utility functions.
 
 """
-from django.utils import timezone
 from django.contrib.sites.models import Site
+from django.utils import timezone
 
 
 def current_site():

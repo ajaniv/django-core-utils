@@ -5,18 +5,15 @@
 Shared Django-utils core  models module.
 """
 from __future__ import absolute_import
+
 import logging
+
 import inflection
-
 from django.contrib.sites.models import Site
-
-
 from django.db import models
-
 from utils.core import class_name
-from . import fields
-from . import constants
 
+from . import constants, fields
 
 logger = logging.getLogger(__name__)
 
