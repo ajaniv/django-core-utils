@@ -65,7 +65,7 @@ class VersionedModelFactory(factory.DjangoModelFactory):
         """Model meta class."""
         abstract = True
         model = VersionedModel
-        django_get_or_create = ('id', 'uuid')
+        django_get_or_create = ('uuid',)
 
     creation_user = factory.SubFactory(UserFactory)
     update_user = factory.SubFactory(UserFactory)
