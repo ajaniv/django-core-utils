@@ -55,8 +55,6 @@ class SiteFactory(factory.DjangoModelFactory):
         model = Site
         django_get_or_create = ('id',)
 
-    id = 1
-
 
 class VersionedModelFactory(factory.DjangoModelFactory):
     """Versioned model factory class."""
@@ -74,7 +72,6 @@ class VersionedModelFactory(factory.DjangoModelFactory):
     enabled = True
     deleted = False
 
-    id = factory.Sequence(lambda n: n)
     uuid = factory.Sequence(lambda _: _uuid.uuid4())
 
     @classmethod
