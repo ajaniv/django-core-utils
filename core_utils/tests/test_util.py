@@ -52,8 +52,8 @@ class TestCaseMixin(object):
 class BaseAppDjangoTestCase(TestCaseMixin, TestCase):
     """Base Django test case class"""
     def setUp(self):
-        TestCaseMixin.setUp(self)
         TestCase.setUp(self)
+        TestCaseMixin.setUp(self)
 
     def tearDown(self):
         TestCaseMixin.tearDown(self)
