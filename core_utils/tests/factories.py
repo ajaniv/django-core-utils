@@ -53,7 +53,9 @@ class SiteFactory(factory.DjangoModelFactory):
     class Meta(object):
         """Model meta class."""
         model = Site
-        django_get_or_create = ('id',)
+        django_get_or_create = ('domain',)
+
+    domain = 'test_domain'
 
 
 class VersionedModelFactory(factory.DjangoModelFactory):
