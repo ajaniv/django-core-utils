@@ -7,6 +7,11 @@ It was developed using Django 1.9.4 for python 2.7 and python 3.5. A separate pr
 
 Detailed documentation is in the "docs" directory.
 
+Build Status
+------------
+
+[![image](https://travis-ci.org/ajaniv/django-core-utils.svg?branch=master)](https://travis-ci.org/ajaniv/django-core-utils)
+
 Quick start
 -----------
 

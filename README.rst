@@ -1,3 +1,4 @@
+
 ==========
 core_utils
 ==========
@@ -11,6 +12,14 @@ because of Django's limitations in handling model classes created witin
 the scope of a unit test.
 
 Detailed documentation is in the "docs" directory.
+
+
+Build Status
+------------
+
+.. image:: https://travis-ci.org/ajaniv/django-core-utils.svg?branch=master
+    :target: https://travis-ci.org/ajaniv/django-core-utils
+
 
 Quick start
 -----------
