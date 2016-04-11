@@ -11,7 +11,8 @@ import logging
 import inflection
 from django.contrib.sites.models import Site
 from django.db import models
-from utils.core import class_name
+from django.utils.encoding import python_2_unicode_compatible
+from utils.core import class_name, instance_class_name
 
 from . import constants, fields
 
@@ -72,15 +73,11 @@ class VersionedModelManager(models.Manager):
             return None
 
 
+@python_2_unicode_compatible
 class VersionedModel(models.Model):
     """An abstract base class for application object versioning.
     """
-    class Meta(object):
-        """Meta class declaration."""
-        abstract = True
-        get_latest_by = 'update_time'
 
-    objects = VersionedModelManager()
     id = fields.auto_field()
     uuid = fields.uuid_field()
     version = fields.integer_field()
@@ -105,6 +102,13 @@ class VersionedModel(models.Model):
         Site,
         related_name="%(app_label)s_%(class)s_related_site")
 
+    objects = VersionedModelManager()
+
+    class Meta(object):
+        """Meta class declaration."""
+        abstract = True
+        get_latest_by = 'update_time'
+
     def __init__(self, *args, **kwargs):
         super(VersionedModel, self).__init__(*args, **kwargs)
 
@@ -119,6 +123,10 @@ class VersionedModel(models.Model):
         if update_user is not None:
             self.effective_user = effective_user
         super(VersionedModel, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return '{0} object {1.id!s} {1.uuid!s} {1.version!s}'.format(
+            instance_class_name(self), self)
 
 
 class NamedModelManager(VersionedModelManager):
@@ -142,15 +150,16 @@ class NamedModel(VersionedModel):
     Designed to facilitate the capture of static reference data
     types such as countries, currencies, and languages.
     """
+    name = fields.name_field()
+    alias = fields.name_field(blank=True, null=True, unique=False)
+    description = fields.description_field(blank=True, null=True)
+
     class Meta(VersionedModel.Meta):
         """Model meta class declaration."""
         abstract = True
         ordering = ("name",)
 
     objects = NamedModelManager()
-    name = fields.name_field()
-    alias = fields.name_field(blank=True, null=True, unique=False)
-    description = fields.description_field(blank=True, null=True)
 
     @property
     def display_name(self):
@@ -158,7 +167,9 @@ class NamedModel(VersionedModel):
         return self.alias if self.alias else self.name
 
     def __str__(self):
-        return self.display_name
+        # TODO: in python 2.7 calling super results in recursion
+        return '{0} {1.display_name!s}'.format(
+            super(NamedModel, self).__str__(), self)
 
 
 class PrioritizedModel(models.Model):

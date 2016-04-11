@@ -10,8 +10,9 @@ from __future__ import absolute_import, print_function
 
 from django.test import TestCase
 
-from ..models import (VersionedModel, db_table, db_table_for_app_and_class,
-                      db_table_for_class, pluralize, verbose_class_name)
+from ..models import (NamedModel, VersionedModel, db_table,
+                      db_table_for_app_and_class, db_table_for_class,
+                      pluralize, verbose_class_name)
 
 _app_label = 'test_inflection'
 
@@ -19,6 +20,7 @@ _app_label = 'test_inflection'
 class MyModel(VersionedModel):
     """Sample model class."""
     class Meta(VersionedModel.Meta):
+        """Meta model class."""
         app_label = _app_label
 
 
@@ -57,3 +59,30 @@ class InflectionTestCase(TestCase):
             site_label=None)
         self.assertEqual(name, self.expected_table_name,
                          "db_table_name error %s" % name)
+
+
+class VersionedModelTestCase(TestCase):
+    """Versioned model   unitest  class.
+    """
+    def test_str(self):
+        expected = 'MyModel object None'
+        instance = MyModel()
+        self.assertTrue(str(instance).startswith(expected))
+
+
+class MyNamedModel(NamedModel):
+    """Sample named model class."""
+    class Meta(NamedModel.Meta):
+        """Meta model class."""
+        app_label = _app_label
+
+
+class NamedModelTestCase(TestCase):
+    """Named model   unitest  class.
+    """
+    def test_str(self):
+        expected = 'MyNamedModel object None'
+        myname = 'myname'
+        instance = MyNamedModel(name=myname)
+        self.assertTrue(str(instance).startswith(expected))
+        self.assertTrue(str(instance).endswith(myname))
