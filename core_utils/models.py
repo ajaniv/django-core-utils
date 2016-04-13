@@ -120,7 +120,7 @@ class VersionedModel(models.Model):
         if update_user is not None:
             self.update_user = update_user
         effective_user = kwargs.pop("effective_user", None)
-        if update_user is not None:
+        if effective_user is not None:
             self.effective_user = effective_user
         super(VersionedModel, self).save(*args, **kwargs)
 
