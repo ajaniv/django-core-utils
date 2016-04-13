@@ -12,7 +12,7 @@ from random import randrange
 import inflection
 from django.conf import settings
 from django.test import TestCase
-from utils.core import instance_class_name
+from utils.core import instance_class_name, class_name
 
 from . import factories
 from ..utils import current_site
@@ -170,6 +170,28 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
         """
         pass
 
+    def verify_versioned_model_crud(self, factory_class):
+        """Verify versioned model simple crud operations.
+        """
+        model_class = factory_class.model_class()
+        model_class_name = class_name(model_class)
+
+        instance = factory_class()
+        self.verify_instance(instance)
+        self.assertEqual(
+            1,
+            model_class.objects.count(),
+            "Missing %s instances after create" % model_class_name)
+        fetched = model_class.objects.get(pk=instance.id)
+        fetched.save()
+        self.assertEqual(
+            fetched.version, 2,
+            "%s version mismatch after save" % model_class_name)
+        fetched.delete()
+        self.assertEqual(
+            model_class.objects.count(),
+            0,
+            "%s instance mismatch after delete" % model_class_name)
 #
 #     def check_creation(self, model_class_name, count=1, version=1, **kwargs):
 #         klass = self.factory_for(model_class_name)
@@ -239,6 +261,32 @@ class NamedModelTestCase(VersionedModelTestCase):
         self.assertTrue(
             obj.name,
             '{} name is None at {}'.format(instance_class_name(obj), index))
+
+    def verify_named_model_crud(self, names, factory_class, get_by_name):
+        """Verify named model simple crud operations.
+        """
+        model_class = factory_class.model_class()
+        model_class_name = class_name(model_class)
+        for name in names:
+            instance = factory_class(name=name)
+            self.verify_instance(instance)
+        instance_count = model_class.objects.count()
+        self.assertEqual(
+            len(names),
+            instance_count,
+            "Missing %s instances after create" % model_class_name)
+        instance = model_class.objects.get(name=get_by_name)
+        instance.name = 'new name'
+        instance.save()
+        self.assertEqual(
+            instance.version, 2,
+            "%s version mismatch after save" % model_class_name)
+        instance.delete()
+        self.assertEqual(
+            model_class.objects.count() + 1,
+            instance_count,
+            "%s instance mismatch after delete" % model_class_name)
+        model_class.objects.all().delete()
 
 
 def create_instances(klass, count, *args, **kwargs):
