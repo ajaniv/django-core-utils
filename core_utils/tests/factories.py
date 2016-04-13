@@ -17,10 +17,16 @@ from utils.core import class_name
 from ..models import NamedModel, VersionedModel
 
 
+def model_class(factory_class):
+    """Return model class name .
+    """
+    return factory_class._meta.model
+
+
 def model_class_name(factory_class):
     """Return model class name for factory class.
     """
-    return class_name(factory_class._meta.model)
+    return class_name(model_class(factory_class))
 
 
 def default_name(cls, number):
@@ -75,6 +81,11 @@ class VersionedModelFactory(factory.DjangoModelFactory):
     deleted = False
 
     uuid = factory.Sequence(lambda _: _uuid.uuid4())
+
+    @classmethod
+    def model_class(cls):
+        """Return model class."""
+        return model_class(cls)
 
     @classmethod
     def model_class_name(cls):
