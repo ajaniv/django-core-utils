@@ -353,16 +353,16 @@ def user_agent_field(**kwargs):
     return char_field(**defaults)
 
 # @TODO: revisit approach for default time zone field
-DEFAULT_TIME_ZONE = 'America/New_York'
+DEFAULT_TIMEZONE = 'America/New_York'
 
 
-def time_zone_field(**kwargs):
+def timezone_field(**kwargs):
     """Create time zone field instance.
     """
     defaults = dict(
         null=False,
         blank=False,
-        default=DEFAULT_TIME_ZONE)
+        default=DEFAULT_TIMEZONE)
     defaults.update(kwargs)
     return TimeZoneField(**defaults)
 
