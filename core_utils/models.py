@@ -168,8 +168,7 @@ class NamedModel(VersionedModel):
 
     def __str__(self):
         # TODO: in python 2.7 calling super results in recursion
-        return '{0} {1.display_name!s}'.format(
-            super(NamedModel, self).__str__(), self)
+        return '{0.display_name!s}'.format(self)
 
 
 class PrioritizedModel(models.Model):
