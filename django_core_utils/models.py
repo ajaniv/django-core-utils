@@ -1,8 +1,8 @@
 """
-.. module::  core.models
-   :synopsis:  Shared Django-utils core  models module.
+.. module::  django_core_utils.models
+   :synopsis:  django_core_utils core  models module.
 
-Shared Django-utils core  models module.
+Shared django_core_utils core  models module.
 """
 from __future__ import absolute_import
 
@@ -12,7 +12,7 @@ import inflection
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from utils.core import class_name, instance_class_name
+from python_core_utils.core import class_name, instance_class_name
 
 from . import constants, fields
 

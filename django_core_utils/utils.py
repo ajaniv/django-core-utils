@@ -1,6 +1,6 @@
 """
-.. module::  core.utils
-   :synopsis:  django-utils core simple Django utilities module.
+.. module::  django_core_utils.utils
+   :synopsis:  django_core_utils simple Django utilities module.
 
 The *utils* module is a collection of Django utility functions.
 

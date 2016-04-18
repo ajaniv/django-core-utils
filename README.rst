@@ -1,9 +1,9 @@
 
-==========
-core_utils
-==========
+=================
+django_core_utils
+=================
 
-*core_utils* is a reusable Django app.  It is primarily intended for applications
+*django_core_utils* is a reusable Django app.  It is primarily intended for applications
 which need to maintain an audit trail of database changes. 
 
 It was developed using Django 1.9.4 for python 2.7 and python 3.5.
@@ -29,7 +29,7 @@ Quick start
 
     INSTALLED_APPS = [
         ...
-        'core_utils',
+        'django_core_utils',
     ]
 
 Key Classes
@@ -66,7 +66,7 @@ Dependencies
 Runtime
 ^^^^^^^
 
-* python_utils
+* python_core_utils
 * django-macaddress
 * django-phonenumber-field
 * django-timezone-field

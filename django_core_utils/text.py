@@ -1,6 +1,6 @@
 """
 
-..  module:: core_utils.text
+..  module:: django_core_utils.text
     :synopsis: Common text utilities supporting internationalization.
 
 Common text utilities supporting internationalization.

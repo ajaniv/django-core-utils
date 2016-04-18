@@ -1,6 +1,6 @@
 """
-.. module::  core.fields
-   :synopsis:  django-utils core model fields utilities module.
+.. module::  django_core_utils.fields
+   :synopsis:  django_core_utils core model fields utilities module.
 
 The *fields* module is a collection of Django model fields utilities
 designed to foster common field usage and facilitate configuration changes.
@@ -18,7 +18,7 @@ from django.utils.translation import gettext as _
 from macaddress.fields import MACAddressField
 from phonenumber_field.modelfields import PhoneNumberField
 from timezone_field import TimeZoneField
-from utils.core import class_name
+from python_core_utils.core import class_name
 
 
 # Note: each factory function has '_field' suffix to minimize conflicts with

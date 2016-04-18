@@ -1,9 +1,9 @@
 """
 
-..  module:: core.utils.admin
-    :synopsis: Django admin core functionality.
+..  module:: django_core_utils.admin
+    :synopsis: django_core_utils admin core functionality.
 
-Django admin core functionality.
+django_core_utils admin core functionality.
 
 
 """
@@ -12,7 +12,7 @@ from __future__ import absolute_import
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.sites.shortcuts import get_current_site
-from utils.core import class_name
+from python_core_utils.core import class_name
 
 from .forms import GroupAdminForm, NamedModelAdminForm, VersionedModelAdminForm
 

@@ -1,8 +1,8 @@
 """
-.. module::  core.tests.test_fields
-   :synopsis:  django-utils fields unit test module.
+.. module::  django_core_utils.tests.test_fields
+   :synopsis:  django_core_utils fields unit test module.
 
-*django-utils* fields unit test module.
+*django_core_utils* fields unit test module.
 """
 from __future__ import absolute_import, print_function
 

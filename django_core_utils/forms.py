@@ -1,17 +1,17 @@
 """
 
-..  module:: core.utils.forms
-    :synopsis: Common  Django form  utilities.
+..  module:: django_core_utils.forms
+    :synopsis: django_core_utils form  utilities.
 
 
-Common  Django form  utilities.
+django_core_utils form  utilities.
 
 """
 from __future__ import absolute_import
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group, User
-from utils.core import dict_merge
+from python_core_utils.core import dict_merge
 
 from .models import NamedModel
 from .text import (named_model_help_texts, named_model_labels,
