@@ -7,7 +7,7 @@ Django admin core functionality.
 
 
 """
-
+from __future__ import absolute_import
 
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin
@@ -19,14 +19,14 @@ from .forms import GroupAdminForm, NamedModelAdminForm, VersionedModelAdminForm
 DISPLAY_NAME_SIZE = 32
 
 
-def create_admin_class(class_name,
+def create_admin_class(target_class_name,
                        base_classes,
                        attrs):
     """
     Dynamically create instance of admin class
     """
     return type(
-        class_name,
+        target_class_name,
         base_classes,
         attrs)
 
@@ -53,6 +53,7 @@ def admin_site_register(clasz, base_classes, attrs):
 
 
 def name_model_fields():
+    """return named model fields"""
     return (("name",), ("alias",), ("description",))
 
 
@@ -72,6 +73,7 @@ def named_model_admin_class_attrs(model_name):
 
 
 def system_fields():
+    """return system fields"""
     return (("id",),
             ("uuid",),
             ("version"),
@@ -79,6 +81,7 @@ def system_fields():
 
 
 def system_field_set():
+    """return system fields set"""
     return ("System", {
             "classes": ("collapse",),
             "fields": system_fields(),
@@ -86,12 +89,14 @@ def system_field_set():
 
 
 def audit_fields():
+    """return audit fields"""
     return(("effective_user",),
            ("update_time",), ("update_user",),
            ("creation_time",), ("creation_user",))
 
 
 def audit_field_set():
+    """return audit fields set"""
     return ("Audit", {
             "classes": ("collapse",),
             "fields": audit_fields(),
@@ -99,10 +104,12 @@ def audit_field_set():
 
 
 def detail_fields():
+    """return detail fields"""
     return("enabled", "deleted")
 
 
 def detail_field_set():
+    """return detail fields set"""
     return ("Details",
             {
                 "classes": ("collapse",),
@@ -147,15 +154,13 @@ class VersionedModelAdmin(admin.ModelAdmin):
         super(VersionedModelAdmin, self).save_model(request, obj, form, change)
 
     def prepare(self, request, obj, form, change):
-        """
-        Subclass hook to prepare for saving
+        """Subclass hook to prepare for saving.
         """
         self.prepare_system_fields(request, obj,
                                    form, change)
 
     def prepare_system_fields(self, request, obj, form, change):
-        """
-        Populate system related fields
+        """Populate system related fields.
         """
         if obj.id is None:
             obj.creation_user = request.user
@@ -165,6 +170,7 @@ class VersionedModelAdmin(admin.ModelAdmin):
 
     @classmethod
     def get_field_sets(clasz):
+        """return field set."""
         return (detail_field_set(),
                 audit_field_set(),
                 system_field_set())
@@ -182,11 +188,6 @@ class NamedModelAdmin(VersionedModelAdmin):
     ordering = ("name",)
 
     def get_name(self, instance):
+        """return instance name."""
         return instance.name[:DISPLAY_NAME_SIZE]
     get_name.short_description = "name"
-
-    @classmethod
-    def get_field_sets(clasz):
-        return (detail_field_set(),
-                audit_field_set(),
-                system_field_set())

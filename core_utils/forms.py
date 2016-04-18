@@ -7,7 +7,7 @@
 Common  Django form  utilities.
 
 """
-
+from __future__ import absolute_import
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group, User
@@ -22,6 +22,7 @@ class VersionedModelAdminForm(forms.ModelForm):
     """Versioned model admin form class.
     """
     class Meta:
+        """Meta class declaration."""
         labels = versioned_model_labels
         help_texts = versioned_model_help_texts
         fields = '__all__'
@@ -57,6 +58,7 @@ class NamedModelAdminForm(VersionedModelAdminForm):
     """Named model admin form class.
     """
     class Meta(VersionedModelAdminForm.Meta):
+        """Meta class declaration."""
         model = NamedModel
         fields = '__all__'
         widgets = {
@@ -82,6 +84,7 @@ class GroupAdminForm(forms.ModelForm):
         required=False)
 
     class Meta:
+        """Meta class declaration."""
         model = Group
         fields = '__all__'
 
