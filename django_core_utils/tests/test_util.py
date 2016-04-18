@@ -1,6 +1,6 @@
 """
 
-..  module:: omcore.utils.tests.test_util.py
+..  module:: django_core_utils.tests.test_util.py
     :synopsis: Unit test utilities module
 
 """
@@ -12,7 +12,7 @@ from random import randrange
 import inflection
 from django.conf import settings
 from django.test import TestCase
-from utils.core import instance_class_name, class_name
+from python_core_utils.core import instance_class_name, class_name
 
 from . import factories
 from ..utils import current_site

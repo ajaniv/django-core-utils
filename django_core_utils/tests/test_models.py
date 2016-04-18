@@ -1,8 +1,8 @@
 """
-.. module::  core.tests.test_models
-   :synopsis: django-utils models unit test module.
+.. module::  django_core_utils.tests.test_models
+   :synopsis: django_core_utils models unit test module.
 
-*django-utils* models unit test module.  The unit tests for
+*django_core_utils* models unit test module.  The unit tests for
  abstract models are implemented in a separate project due
  to Django not  handling of dynamic model db table creation.
 """

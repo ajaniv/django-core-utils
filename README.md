@@ -1,7 +1,7 @@
-core\_utils
-===========
+django\_core\_utils
+===================
 
-*core\_utils* is a reusable Django app. It is primarily intended for applications which need to maintain an audit trail of database changes.
+*django\_core\_utils* is a reusable Django app. It is primarily intended for applications which need to maintain an audit trail of database changes.
 
 It was developed using Django 1.9.4 for python 2.7 and python 3.5. A separate project *django\_utils\_test* was created to test the abstract classes because of Django's limitations in handling model classes created witin the scope of a unit test.
 
@@ -20,7 +20,7 @@ Quick start
 
         INSTALLED_APPS = [
             ...
-            'core_utils',
+            'django_core_utils',
         ]
 
 Key Classes

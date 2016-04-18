@@ -1,8 +1,8 @@
 """
-.. module::  core.tests.settings
-   :synopsis: django_utils core test settings modules
+.. module::  django_core_utils.tests.settings
+   :synopsis: django_core_utils core test settings modules
 
-*django_utils core* test settings modules
+*django_core_utils core* test settings modules
 """
 
 import os

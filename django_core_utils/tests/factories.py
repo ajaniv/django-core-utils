@@ -1,8 +1,8 @@
 """
-.. module::  core.tests.factories
-   :synopsis:  django-utils core factory module.
+.. module::  django_core_utils.tests.factories
+   :synopsis:  django_core_utils core factory module.
 
-*django-utils* core factory module.
+*django_core_utils* core factory module.
 """
 from __future__ import absolute_import
 
@@ -12,7 +12,7 @@ from random import randint
 import factory
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from utils.core import class_name
+from python_core_utils.core import class_name
 
 from ..models import NamedModel, VersionedModel
 
