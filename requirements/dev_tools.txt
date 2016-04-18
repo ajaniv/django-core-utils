@@ -3,6 +3,7 @@
 -r testing.txt
 -r documentation.txt
 check-manifest==0.31
+django-extensions==1.6.1
 django-debug-toolbar==1.4
 six==1.10.0
 python-dateutil==2.5.2

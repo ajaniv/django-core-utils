@@ -1,0 +1,108 @@
+"""
+
+..  module:: core.utils.forms
+    :synopsis: Common  Django form  utilities.
+
+
+Common  Django form  utilities.
+
+"""
+
+from django import forms
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.auth.models import Group, User
+from utils.core import dict_merge
+
+from .models import NamedModel
+from .text import (named_model_help_texts, named_model_labels,
+                   versioned_model_help_texts, versioned_model_labels)
+
+
+class VersionedModelAdminForm(forms.ModelForm):
+    """Versioned model admin form class.
+    """
+    class Meta:
+        labels = versioned_model_labels
+        help_texts = versioned_model_help_texts
+        fields = '__all__'
+
+    @classmethod
+    def labels(clasz):
+        return clasz.Meta.labels
+
+    @classmethod
+    def help_texts(clasz):
+        return clasz.help_texts
+
+    def _update_group(self, group, set_name, field_name, commit):
+        """
+        Utility method for updating many-to-many model field
+        Allows grouping of elements to manage which elements
+        are in the group
+        """
+        if commit:
+            setattr(group, set_name,
+                    self.cleaned_data[field_name])
+        else:
+            old_save_m2m = self.save_m2m
+
+            def new_save_m2m():
+                old_save_m2m()
+                setattr(group, set_name, self.cleaned_data[field_name])
+            self.save_m2m = new_save_m2m
+        return group
+
+
+class NamedModelAdminForm(VersionedModelAdminForm):
+    """Named model admin form class.
+    """
+    class Meta(VersionedModelAdminForm.Meta):
+        model = NamedModel
+        fields = '__all__'
+        widgets = {
+            'description': forms.Textarea(
+                attrs={'rows': 3, 'cols': 40})
+        }
+        labels = dict_merge(
+            VersionedModelAdminForm.Meta.labels,
+            named_model_labels)
+
+        help_texts = dict_merge(
+            VersionedModelAdminForm.Meta.help_texts,
+            named_model_help_texts)
+
+
+class GroupAdminForm(forms.ModelForm):
+    """
+    Admin form with editable user list
+    """
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        widget=FilteredSelectMultiple('Users', False),
+        required=False)
+
+    class Meta:
+        model = Group
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            initial = kwargs.get('initial', {})
+            initial['users'] = instance.user_set.all()
+            kwargs['initial'] = initial
+        super(GroupAdminForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        group = super(GroupAdminForm, self).save(commit=commit)
+
+        if commit:
+            group.user_set = self.cleaned_data['users']
+        else:
+            old_save_m2m = self.save_m2m
+
+            def new_save_m2m():
+                old_save_m2m()
+                group.user_set = self.cleaned_data['users']
+            self.save_m2m = new_save_m2m
+        return group

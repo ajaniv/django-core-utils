@@ -81,8 +81,6 @@ class NamedModelTestCase(TestCase):
     """Named model   unitest  class.
     """
     def test_str(self):
-        expected = 'MyNamedModel object None'
         myname = 'myname'
         instance = MyNamedModel(name=myname)
-        self.assertTrue(str(instance).startswith(expected))
-        self.assertTrue(str(instance).endswith(myname))
+        self.assertEqual(str(instance), myname, "invalid str result")
