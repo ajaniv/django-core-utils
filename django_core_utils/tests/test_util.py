@@ -64,7 +64,7 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
     """Versioned model unit test class.
     """
     def verify_instance(self, instance, version=1, **kwargs):
-        self.verify_instances([instance], version, **kwargs)
+        self.verify_instances([instance], count=1, version=version, **kwargs)
 
     def verify_instances(self, instances,
                          count=1, version=1, **kwargs):

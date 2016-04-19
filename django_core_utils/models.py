@@ -144,13 +144,12 @@ class NamedModelManager(VersionedModelManager):
             return self.get(name=constants.UNKNOWN)
 
 
-class NamedModel(VersionedModel):
+class BasedNamedModel(VersionedModel):
     """Abstract base class for named model instances.
 
     Designed to facilitate the capture of static reference data
     types such as countries, currencies, and languages.
     """
-    name = fields.name_field()
     alias = fields.name_field(blank=True, null=True, unique=False)
     description = fields.description_field(blank=True, null=True)
 
@@ -169,6 +168,28 @@ class NamedModel(VersionedModel):
     def __str__(self):
         # TODO: in python 2.7 calling super results in recursion
         return '{0.display_name!s}'.format(self)
+
+
+class NamedModel(BasedNamedModel):
+    """Abstract base class for required 'named' model instances.
+
+    """
+    name = fields.name_field()
+
+    class Meta(BasedNamedModel.Meta):
+        """Model meta class declaration."""
+        abstract = True
+
+
+class OptionalNamedModel(BasedNamedModel):
+    """Abstract base class for optional 'named' model instances.
+
+    """
+    name = fields.name_field(blank=True, null=True, unique=False)
+
+    class Meta(BasedNamedModel.Meta):
+        """Model meta class declaration."""
+        abstract = True
 
 
 class PrioritizedModel(models.Model):
