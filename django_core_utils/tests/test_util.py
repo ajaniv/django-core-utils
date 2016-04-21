@@ -7,7 +7,8 @@
 from __future__ import absolute_import, print_function
 
 import os
-from random import randrange
+from random import randrange, choice
+import string
 
 import inflection
 from django.conf import settings
@@ -178,6 +179,7 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
 
         instance = factory_class()
         self.verify_instance(instance)
+        instance.full_clean()
         self.assertEqual(
             1,
             model_class.objects.count(),
@@ -263,16 +265,26 @@ class NamedModelTestCase(VersionedModelTestCase):
             '{} name is None at {}'.format(instance_class_name(obj), index))
 
     def verify_named_model_crud(self, names, factory_class, get_by_name):
-        """Verify named model simple crud operations.
+        """Create named model instances and verify simple crud operations.
+        """
+        instances = []
+        for name in names:
+            instances.append(factory_class(name=name))
+        self.verify_named_instances_crud(
+            instances, factory_class, get_by_name)
+
+    def verify_named_instances_crud(self, instances,
+                                    factory_class, get_by_name):
+        """Verify crud operations on created named instances.
         """
         model_class = factory_class.model_class()
         model_class_name = class_name(model_class)
-        for name in names:
-            instance = factory_class(name=name)
+        for instance in instances:
             self.verify_instance(instance)
+            instance.full_clean()
         instance_count = model_class.objects.count()
         self.assertEqual(
-            len(names),
+            len(instances),
             instance_count,
             "Missing %s instances after create" % model_class_name)
         instance = model_class.objects.get(name=get_by_name)
@@ -309,6 +321,17 @@ def randam_ip(n):  # @UnusedVariable
     ip = ".".join([str(first), str(randrange(1, 256)),
                    str(randrange(1, 256)), str(randrange(1, 256))])
     return ip
+
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    """Generate an id of a given size"""
+    return ''.join(choice(chars) for _ in range(size))
+
+
+def alpha2_iso_generator():
+    """2 char ISO code generator
+    """
+    return id_generator(size=2, chars=string.ascii_uppercase)
 
 
 def create_named_instances(klass, names, *args, **kwargs):
