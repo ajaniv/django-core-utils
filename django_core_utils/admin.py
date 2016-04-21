@@ -14,7 +14,8 @@ from django.contrib.auth.admin import GroupAdmin
 from django.contrib.sites.shortcuts import get_current_site
 from python_core_utils.core import class_name
 
-from .forms import GroupAdminForm, NamedModelAdminForm, VersionedModelAdminForm
+from .forms import (GroupAdminForm, NamedModelAdminForm,
+                    OptionalNamedModelAdminForm, VersionedModelAdminForm)
 
 DISPLAY_NAME_SIZE = 32
 
@@ -176,12 +177,13 @@ class VersionedModelAdmin(admin.ModelAdmin):
                 system_field_set())
 
 
-class NamedModelAdmin(VersionedModelAdmin):
+class BaseNamedModelAdmin(VersionedModelAdmin):
     """
-    Named model admin class.
+    Base named model admin class.
     """
     form = NamedModelAdminForm
-    list_display = ("id", "get_name", "update_time", "update_user")
+    list_display = ("id", "get_name", "get_alias",
+                    "version", "update_time", "update_user")
     list_display_links = ("id", "get_name", )
     list_filter = ("name",) + VersionedModelAdmin.list_filter
     search_fields = ("name",)
@@ -191,3 +193,22 @@ class NamedModelAdmin(VersionedModelAdmin):
         """return instance name."""
         return instance.name[:DISPLAY_NAME_SIZE]
     get_name.short_description = "name"
+
+    def get_alias(self, instance):
+        """return instance alias name."""
+        return instance.alias[:DISPLAY_NAME_SIZE]
+    get_alias.short_description = "alias"
+
+
+class NamedModelAdmin(BaseNamedModelAdmin):
+    """
+    Named model admin class.
+    """
+    form = NamedModelAdminForm
+
+
+class OptionalNamedModelAdmin(BaseNamedModelAdmin):
+    """
+    Optional named model admin class.
+    """
+    form = OptionalNamedModelAdminForm

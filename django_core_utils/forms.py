@@ -13,7 +13,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group, User
 from python_core_utils.core import dict_merge
 
-from .models import NamedModel
+from .models import NamedModel, OptionalNamedModel
 from .text import (named_model_help_texts, named_model_labels,
                    versioned_model_help_texts, versioned_model_labels)
 
@@ -54,12 +54,11 @@ class VersionedModelAdminForm(forms.ModelForm):
         return group
 
 
-class NamedModelAdminForm(VersionedModelAdminForm):
-    """Named model admin form class.
+class BasedNamedModelAdminForm(VersionedModelAdminForm):
+    """Base named model admin form class.
     """
     class Meta(VersionedModelAdminForm.Meta):
         """Meta class declaration."""
-        model = NamedModel
         fields = '__all__'
         widgets = {
             'description': forms.Textarea(
@@ -72,6 +71,22 @@ class NamedModelAdminForm(VersionedModelAdminForm):
         help_texts = dict_merge(
             VersionedModelAdminForm.Meta.help_texts,
             named_model_help_texts)
+
+
+class NamedModelAdminForm(BasedNamedModelAdminForm):
+    """Named model admin form class.
+    """
+    class Meta(VersionedModelAdminForm.Meta):
+        """Meta class declaration."""
+        model = NamedModel
+
+
+class OptionalNamedModelAdminForm(BasedNamedModelAdminForm):
+    """Optional named model admin form class.
+    """
+    class Meta(VersionedModelAdminForm.Meta):
+        """Meta class declaration."""
+        model = OptionalNamedModel
 
 
 class GroupAdminForm(forms.ModelForm):
