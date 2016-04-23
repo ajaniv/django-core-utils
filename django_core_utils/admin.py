@@ -14,6 +14,7 @@ from django.contrib.auth.admin import GroupAdmin
 from django.contrib.sites.shortcuts import get_current_site
 from python_core_utils.core import class_name
 
+from . import constants
 from .forms import (GroupAdminForm, NamedModelAdminForm,
                     OptionalNamedModelAdminForm, VersionedModelAdminForm)
 
@@ -193,11 +194,21 @@ class BaseNamedModelAdmin(VersionedModelAdmin):
         """return instance name."""
         return instance.name[:DISPLAY_NAME_SIZE]
     get_name.short_description = "name"
+    get_name.admin_order_field = "name"
 
     def get_alias(self, instance):
         """return instance alias name."""
         return instance.alias[:DISPLAY_NAME_SIZE]
     get_alias.short_description = "alias"
+    get_alias.admin_order_field = "alias"
+
+    def get_queryset(self, request):
+        # Eliminate 'UNKNOWN' from the result set for 'most' users
+        # @TODO: revisit approach; impacts performance, usability
+        qs = super(BaseNamedModelAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.exclude(name=constants.UNKNOWN)
 
 
 class NamedModelAdmin(BaseNamedModelAdmin):
