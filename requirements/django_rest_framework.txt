@@ -1,0 +1,5 @@
+djangorestframework==3.3.3
+django-filter==0.13.0
+django-crispy-forms==1.6.0
+django-guardian==1.4.4
+httpie==0.9.3

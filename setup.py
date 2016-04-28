@@ -40,13 +40,14 @@ setup(
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
-        'python-core-utils',
-        'Django>=1.9.0',
         'inflection>=0.3.1',
+        'Django>=1.9.0',
+        'djangorestframework>=3.3.3',
         'django-macaddress>=1.3.2',
         'django-phonenumber-field>=1.0.0',
         'django-timezone-field>=1.3',
         'phonenumbers==7.2.6',
+        'python-core-utils',
     ],
     dependency_links=[
         _git_url_root + 'python-core-utils@v0.1.0#egg=python-core-utils'
