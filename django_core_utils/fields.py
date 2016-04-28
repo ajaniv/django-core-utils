@@ -18,6 +18,7 @@ from django.utils.translation import gettext as _
 from macaddress.fields import MACAddressField
 from phonenumber_field.modelfields import PhoneNumberField
 from timezone_field import TimeZoneField
+
 from python_core_utils.core import class_name
 
 
