@@ -12,6 +12,7 @@ import inflection
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+
 from python_core_utils.core import class_name, instance_class_name
 
 from . import constants, fields
@@ -116,12 +117,6 @@ class VersionedModel(models.Model):
         """Save an instance.
         """
         self.version += 1
-        update_user = kwargs.pop("update_user", None)
-        if update_user is not None:
-            self.update_user = update_user
-        effective_user = kwargs.pop("effective_user", None)
-        if effective_user is not None:
-            self.effective_user = effective_user
         super(VersionedModel, self).save(*args, **kwargs)
 
     def __str__(self):
