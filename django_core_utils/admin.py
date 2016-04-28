@@ -12,6 +12,7 @@ from __future__ import absolute_import
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.sites.shortcuts import get_current_site
+
 from python_core_utils.core import class_name
 
 from . import constants
@@ -198,7 +199,7 @@ class BaseNamedModelAdmin(VersionedModelAdmin):
 
     def get_alias(self, instance):
         """return instance alias name."""
-        return instance.alias[:DISPLAY_NAME_SIZE]
+        return instance.alias[:DISPLAY_NAME_SIZE] if instance.alias else ''
     get_alias.short_description = "alias"
     get_alias.admin_order_field = "alias"
 
