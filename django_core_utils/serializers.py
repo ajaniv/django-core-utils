@@ -11,6 +11,7 @@ from django.contrib.sites.models import Site
 from rest_framework import serializers
 
 from . import models
+from . import constants
 from .utils import current_site
 
 CREATION_USER = "creation_user"
@@ -47,19 +48,28 @@ class VersionedModelSerializer(serializers.ModelSerializer):
                   CREATION_USER, UPDATE_USER, EFFECTIVE_USER,
                   SITE)
 
-    def validate(self, attrs):
-        """Perform cross field validation.
-        """
-
+    def _add_missing(self, attrs):
+        """Add missing attributes."""
         request = self.context.get("request")
         if request:
             user = getattr(request, USER, None)
             site = current_site(request)
-            model_attrs = (SITE, CREATION_USER, EFFECTIVE_USER, UPDATE_USER)
-            attr_values = (site, user, user, user)
-            for attr, value in zip(model_attrs, attr_values):
+            attr_names = (EFFECTIVE_USER, UPDATE_USER)
+            attr_values = (user, user)
+
+            if request.method == constants.HTTP_POST:
+                attr_names = attr_names + (SITE, CREATION_USER)
+                attr_values = attr_values + (site, user)
+
+            for attr, value in zip(attr_names, attr_values):
                 if attr not in attrs:
                     attrs[attr] = value
+        return attrs
+
+    def validate(self, attrs):
+        """Perform cross field validation.
+        """
+        attrs = self._add_missing(attrs)
 
         # @TODO: does not feel correct to create an
         # instance in order to reuse the model validation.

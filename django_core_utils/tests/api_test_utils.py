@@ -44,14 +44,69 @@ class VersionedModelApiTestCase(BaseApiTestCase):
         self.client.logout()
         super(VersionedModelApiTestCase, self).tearDown()
 
+    def instance_to_dict(self, instance, serializer_class):
+        """Convert an instance to a dict using serializer."""
+        serializer = serializer_class(instance)
+        return serializer.data
+
     def verify_create(self, url_name, data, model_class):
-        """verify post request for versioned model instance creation."""
+        """Verify post rest api request for model instance creation."""
         url = reverse(url_name)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(model_class.objects.count(), 1)
         instance = model_class.objects.get()
         return response, instance
+
+    def verify_get(self, url_name, instance, serializer_class):
+        """Verify rest api get request."""
+        url = reverse(url_name, args=[instance.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        instance_dict = self.instance_to_dict(instance, serializer_class)
+        self.assertEqual(response.data, instance_dict)
+        return response
+
+    def create_instance_default(self, **kwargs):
+        """Create an instance configured for api test execution.
+
+        Required when super user id  is used for log in.
+        """
+        user = self.super_user
+        return self.factory_class(creation_user=user, update_user=user,
+                                  effective_user=user, site=self.site,
+                                  **kwargs)
+
+    def verify_get_defaults(self):
+        """Verify rest api get request using default class data."""
+        return self.verify_get(self.url_detail,
+                               self.create_instance_default(),
+                               self.serializer_class)
+
+    def verify_put(self, url_name, instance, data, serializer_class):
+        """Verify put rest api request."""
+        url = reverse(url_name, args=[instance.id])
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = self.instance_to_dict(instance, serializer_class)
+        expected_data.update(data)
+        expected_data["update_time"] = response.data["update_time"]
+        expected_data["version"] += 1
+        self.assertEqual(response.data, expected_data)
+
+        return response
+
+    def verify_delete(self, url_name, instance):
+        """Verify delete rest api request."""
+        url = reverse(url_name, args=[instance.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        return response
+
+    def verify_delete_default(self):
+        """Verify delete using default parameters."""
+        instance = self.create_instance_default()
+        return self.verify_delete(self.url_detail, instance)
 
 
 class NamdedModelApiTestCase(VersionedModelApiTestCase):

@@ -19,12 +19,8 @@ from rest_framework import generics, mixins, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
+from . import constants
 from .serializers import UserSerializer
-
-HTTP_GET = "GET"
-HTTP_POST = "POST"
-HTTP_DELETE = "DELETE"
-HTTP_PUT = "PUT"
 
 
 def instance_list(request, model_class,
@@ -32,12 +28,12 @@ def instance_list(request, model_class,
     """
     List all versioned model instances, or create a new instance.
     """
-    if request.method == HTTP_GET:
+    if request.method == constants.HTTP_GET:
         instances = model_class.objects.all()
         serializer = serializer_class(instances, many=True)
         return Response(serializer.data)
 
-    elif request.method == HTTP_POST:
+    elif request.method == constants.HTTP_POST:
         serializer = serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -56,11 +52,11 @@ def instance_detail(request, pk, model_class,
     except model_class.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == HTTP_GET:
+    if request.method == constants.HTTP_GET:
         serializer = serializer_class(snippet)
         return Response(serializer.data)
 
-    elif request.method == HTTP_PUT:
+    elif request.method == constants.HTTP_PUT:
         serializer = serializer_class(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -68,7 +64,7 @@ def instance_detail(request, pk, model_class,
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == HTTP_DELETE:
+    elif request.method == constants.HTTP_DELETE:
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
