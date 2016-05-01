@@ -3,15 +3,21 @@
 django_core_utils
 =================
 
-*django_core_utils* is a reusable Django app.  It is primarily intended for applications
-which need to maintain an audit trail of database changes. 
+*django_core_utils* is a reusable Django component primarily intended for applications
+which need to maintain an audit trail of database changes,  develop a consistent
+business object model, and expose REST API end points. The consistent business object
+model development is facilitated with a set of common model base classes and helper functions
+for field creation.
 
 It was developed using Django 1.9.4 for python 2.7 and python 3.5.
 A separate project *django_utils_test* was created to test the abstract classes
-because of Django's limitations in handling model classes created witin
+because of Django's limitations in handling model classes created within
 the scope of a unit test.
 
-Detailed documentation is in the "docs" directory.
+A set of base classes which simplify the development of REST API components
+has been implemented using `djangorestframework`_.
+
+Detailed documentation may be found "docs" directory.
 
 
 Build Status
@@ -32,8 +38,8 @@ Quick start
         'django_core_utils',
     ]
 
-Key Classes
------------
+Key Model Classes
+-----------------
 VersionedModel
 ^^^^^^^^^^^^^^
 Abstract base model class with basic audit trail fields:
@@ -60,11 +66,27 @@ instance priority (i.e. which of a contact's address has the highest priority):
 
 * priority
 
+Key Django Rest API Classes
+---------------------------
+
+Serializers
+^^^^^^^^^^^
+
+* VersionedModelSerializer.
+* NamedModelSerializer
+* PrioritizedModelSerializer
+
+Views
+^^^^^
+
+* ObjectListView
+* ObjectDetailView
+
 Dependencies
 ------------
 
-Runtime
-^^^^^^^
+Runtime/Development
+^^^^^^^^^^^^^^^^^^^
 
 * python_core_utils
 * django-macaddress
@@ -72,6 +94,7 @@ Runtime
 * django-timezone-field
 * inflection
 * phonenumbers
+* `djangorestframework`_.
 
 Development
 ^^^^^^^^^^^
@@ -93,3 +116,14 @@ Notes
   with gitconfig when running:
   
   ``git ls-files -z``
+  
+To do
+-----
+* Generate sphinix and/or markup documentation.
+* Review approach to hand crafted model class, unit test, serializer generation.
+  Portions of these can be generated using scripts, albeit with reduced readability
+  and increased risk of incompatibility with future Django and Django Rest Framewrok
+  releases.
+* Django rest framework mixin classes usage needs to be reviewed.
+  
+ .. _djangorestframework: http://www.django-rest-framework.org/
