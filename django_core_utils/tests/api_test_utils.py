@@ -49,22 +49,41 @@ class VersionedModelApiTestCase(BaseApiTestCase):
         serializer = serializer_class(instance)
         return serializer.data
 
-    def verify_create(self, url_name, data, model_class):
+    def verify_create(self, url_name, data, model_class, data_format=None):
         """Verify post rest api request for model instance creation."""
         url = reverse(url_name)
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(model_class.objects.count(), 1)
-        instance = model_class.objects.get()
+        data_format = data_format or 'json'
+        original_count = model_class.objects.count()
+        response = self.client.post(url, data, format=data_format)
+        self.assertEqual(response.status_code,
+                         status.HTTP_201_CREATED,
+                         response.data)
+        self.assertEqual(model_class.objects.count(),
+                         original_count + 1,
+                         "unexpected object count for %s" % model_class)
+        instance = model_class.objects.filter().order_by('-id')[0]
         return response, instance
 
-    def verify_get(self, url_name, instance, serializer_class):
+    def assert_equal_dict(self, dict1, dict2, excluded):
+        if excluded:
+            dict1 = dict1.copy()
+            dict2 = dict2.copy()
+            for name in excluded:
+                del dict1[name]
+                del dict2[name]
+
+        self.assertEqual(dict1,
+                         dict2,
+                         "%s does not match %s" % (dict1, dict2))
+
+    def verify_get(self, url_name, instance, serializer_class, excluded=None):
         """Verify rest api get request."""
         url = reverse(url_name, args=[instance.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        instance_dict = self.instance_to_dict(instance, serializer_class)
-        self.assertEqual(response.data, instance_dict)
+        ref_data = self.instance_to_dict(instance, serializer_class)
+        self.assert_equal_dict(ref_data, response.data, excluded)
+
         return response
 
     def create_instance_default(self, **kwargs):
@@ -77,22 +96,28 @@ class VersionedModelApiTestCase(BaseApiTestCase):
                                   effective_user=user, site=self.site,
                                   **kwargs)
 
-    def verify_get_defaults(self):
+    def verify_get_defaults(self, excluded=None):
         """Verify rest api get request using default class data."""
         return self.verify_get(self.url_detail,
                                self.create_instance_default(),
-                               self.serializer_class)
+                               self.serializer_class,
+                               excluded)
 
-    def verify_put(self, url_name, instance, data, serializer_class):
+    def verify_put(self, url_name, instance, data,
+                   serializer_class, excluded=None):
         """Verify put rest api request."""
+        excluded = excluded or []
+
         url = reverse(url_name, args=[instance.id])
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = self.instance_to_dict(instance, serializer_class)
         expected_data.update(data)
-        expected_data["update_time"] = response.data["update_time"]
-        expected_data["version"] += 1
-        self.assertEqual(response.data, expected_data)
+
+        to_exclude = excluded + ["update_time", "version"]
+        self.assert_equal_dict(expected_data,
+                               response.data,
+                               to_exclude)
 
         return response
 
@@ -119,10 +144,12 @@ class NamdedModelApiTestCase(VersionedModelApiTestCase):
         data.update(dict(name=self.name))
         return data
 
-    def verify_create(self, url, data, model_class, expected_name=None):
+    def verify_create(self, url, data, model_class,
+                      expected_name=None, data_format=None):
         """Verify post request for named model instance creation."""
         response, instance = super(
-            NamdedModelApiTestCase, self).verify_create(url, data, model_class)
+            NamdedModelApiTestCase, self).verify_create(
+                url, data, model_class, data_format=data_format)
         if expected_name:
             self.assertEqual(instance.name, expected_name)
         return response, instance
@@ -145,3 +172,10 @@ class NamdedModelApiTestCase(VersionedModelApiTestCase):
         Pulls the required parameters from the test class.
         """
         return self.verify_create_defaults(data=dict(name=self.name))
+
+    def verify_put_partial(self, excluded=None):
+        """Verify partially populated put request."""
+        instance = self.create_instance_default()
+        data = dict(id=instance.id, name=self.name)
+        return self.verify_put(
+            self.url_detail, instance, data, self.serializer_class, excluded)

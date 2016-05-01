@@ -156,14 +156,14 @@ class VersionedModelTestCase(BaseModelTestCase):
     def verify_users(self, index, obj):
         """Verify users."""
         msg = '({}): invalid instance.{}({}) at index({})'
-        user_name = self.username
+        test_username = self.user.username
         for attr in ('creation_user', 'update_user', 'effective_user'):
-            usr = getattr(obj, attr)
+            user = getattr(obj, attr)
             self.assertEqual(
-                usr.username, user_name,
+                user.username, test_username,
                 msg.format(
                     instance_class_name(obj),
-                    attr, usr.username, index))
+                    attr, user.username, index))
 
     def verify_enabled(self, index, obj, expected=True):
         """Verify instance enabled."""
@@ -255,6 +255,11 @@ class VersionedModelTestCase(BaseModelTestCase):
 
 
 class NamedModelTestCase(VersionedModelTestCase):
+    """Base class for named model unit tests."""
+    NAME_1 = "name_1"
+    NAME_2 = "name_2"
+    NAMES = (NAME_1, NAME_2)
+
     def verify_instances(self, instances,
                          count=1, version=1, **kwargs):
         super(NamedModelTestCase, self).verify_instances(
