@@ -68,6 +68,16 @@ class TestCaseMixin(object):
     def force_debug(self, value=True):
         settings.DEBUG = value
 
+    def assert_instance_equal(self, reference, other, attrs=None):
+        """Compare two object instances for the given attributes"""
+        if attrs:
+            for attr in attrs:
+                self.assertEqual(getattr(reference, attr),
+                                 getattr(other, attr),
+                                 "attr %s equality check error" % attr)
+        else:
+            self.assertEqual(reference, other, "compare error")
+
 
 class BaseModelTestCase(TestCaseMixin, TestCase):
     """Base Django model test case class"""
