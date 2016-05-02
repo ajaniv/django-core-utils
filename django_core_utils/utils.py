@@ -9,10 +9,10 @@ from django.contrib.sites.models import Site
 from django.utils import timezone
 
 
-def current_site():
+def current_site(request=None):
     """Return site instances.
     """
-    return Site.objects.get_current()
+    return Site.objects.get_current(request)
 
 
 def oldest_timestamp():

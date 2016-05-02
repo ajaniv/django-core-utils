@@ -1,11 +1,13 @@
 django\_core\_utils
 ===================
 
-*django\_core\_utils* is a reusable Django app. It is primarily intended for applications which need to maintain an audit trail of database changes.
+*django\_core\_utils* is a reusable Django component primarily intended for applications which need to maintain an audit trail of database changes, develop a consistent business object model, and expose REST API end points. The consistent business object model development is facilitated with a set of common model base classes and helper functions for field creation.
 
-It was developed using Django 1.9.4 for python 2.7 and python 3.5. A separate project *django\_utils\_test* was created to test the abstract classes because of Django's limitations in handling model classes created witin the scope of a unit test.
+It was developed using Django 1.9.4 for python 2.7 and python 3.5. A separate project *django\_utils\_test* was created to test the abstract classes because of Django's limitations in handling model classes created within the scope of a unit test.
 
-Detailed documentation is in the "docs" directory.
+A set of base classes which simplify the development of REST API components has been implemented using djangorestframework\_.
+
+Detailed documentation may be found "docs" directory.
 
 Build Status
 ------------
@@ -23,8 +25,8 @@ Quick start
             'django_core_utils',
         ]
 
-Key Classes
------------
+Key Model Classes
+-----------------
 
 ### VersionedModel
 
@@ -50,17 +52,32 @@ Abstract class derived from VersionedModel which adds fields required for instan
 
 -   priority
 
+Key Django Rest API Classes
+---------------------------
+
+### Serializers
+
+-   VersionedModelSerializer.
+-   NamedModelSerializer
+-   PrioritizedModelSerializer
+
+### Views
+
+-   ObjectListView
+-   ObjectDetailView
+
 Dependencies
 ------------
 
-### Runtime
+### Runtime/Development
 
--   python\_utils
+-   python\_core\_utils
 -   django-macaddress
 -   django-phonenumber-field
 -   django-timezone-field
 -   inflection
 -   phonenumbers
+-   djangorestframework\_.
 
 ### Development
 
@@ -78,5 +95,12 @@ Dependencies
 -   check-manifest was run from the command line. Could not get it to work from within tox. There was an error in handling '~' with gitconfig when running:
 
     `git ls-files -z`
+
+To do
+-----
+
+-   Generate sphinix and/or markup documentation.
+-   Review approach to hand crafted model class, unit test, serializer generation. Portions of these can be generated using scripts, albeit with reduced readability and increased risk of incompatibility with future Django and Django Rest Framewrok releases.
+-   Django rest framework mixin classes usage needs to be reviewed.
 
 

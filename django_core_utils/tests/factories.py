@@ -12,6 +12,7 @@ from random import randint
 import factory
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+
 from python_core_utils.core import class_name
 
 from ..models import NamedModel, VersionedModel

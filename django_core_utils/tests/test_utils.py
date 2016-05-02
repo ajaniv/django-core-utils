@@ -1,40 +1,59 @@
 """
 
-..  module:: django_core_utils.tests.test_util.py
+..  module:: django_core_utils.tests.test_utils.py
     :synopsis: Unit test utilities module
 
+Unit test utilities module
 """
 from __future__ import absolute_import, print_function
 
 import os
-from random import randrange, choice
 import string
+from random import choice, randrange
 
 import inflection
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase
-from python_core_utils.core import instance_class_name, class_name
+
+from python_core_utils.core import class_name, instance_class_name
 
 from . import factories
 from ..utils import current_site
-
-TEST_DOMAIN = 'ondalear.com'
-TEST_USER_NAME = 'test_user'
-TEST_USER_PASSWORD = 'pass'
-TEST_USER_EMAIL = '{}@{}'.format(TEST_USER_NAME, TEST_DOMAIN)
 
 
 class TestCaseMixin(object):
     """
     Unit test mixin class.
     """
+    TEST_DOMAIN = "ondalear.com"
+    TEST_USER_NAME = "test_user"
+    TEST_SUPER_USER_NAME = "test_super_user"
+    TEST_PASSWORD = "pass"
+    TEST_USER_EMAIL = "{}@{}".format(TEST_USER_NAME, TEST_DOMAIN)
+
     def file_path(self, file_name):
         return test_data_file_path(file_name)
 
-    def setUp(self):
+    def create_super_user(self, username=None, email=None, password=None):
+        return User.objects.create_superuser(
+            username=username or self.TEST_SUPER_USER_NAME,
+            email=email or "{}@{}".format(self.TEST_USER_NAME,
+                                          self.TEST_DOMAIN),
+            password=password or self.TEST_PASSWORD)
 
-        self.username = TEST_USER_NAME
-        self.user = factories.UserFactory(username=TEST_USER_NAME)
+    def create_user(self, username=None, email=None, password=None):
+        user = factories.UserFactory(
+            username=username or self.TEST_USER_NAME,
+            email=email or self.TEST_USER_EMAIL)
+        user.set_password(password or self.TEST_PASSWORD)
+        user.save()
+        return user
+
+    def setUp(self):
+        self.super_user = self.create_super_user()
+        self.user = self.create_user()
+
         self.site = current_site()
         self.saved_debug = settings.DEBUG
         try:
@@ -49,9 +68,19 @@ class TestCaseMixin(object):
     def force_debug(self, value=True):
         settings.DEBUG = value
 
+    def assert_instance_equal(self, reference, other, attrs=None):
+        """Compare two object instances for the given attributes"""
+        if attrs:
+            for attr in attrs:
+                self.assertEqual(getattr(reference, attr),
+                                 getattr(other, attr),
+                                 "attr %s equality check error" % attr)
+        else:
+            self.assertEqual(reference, other, "compare error")
 
-class BaseAppDjangoTestCase(TestCaseMixin, TestCase):
-    """Base Django test case class"""
+
+class BaseModelTestCase(TestCaseMixin, TestCase):
+    """Base Django model test case class"""
     def setUp(self):
         TestCase.setUp(self)
         TestCaseMixin.setUp(self)
@@ -61,7 +90,7 @@ class BaseAppDjangoTestCase(TestCaseMixin, TestCase):
         TestCase.tearDown(self)
 
 
-class VersionedModelTestCase(BaseAppDjangoTestCase):
+class VersionedModelTestCase(BaseModelTestCase):
     """Versioned model unit test class.
     """
     def verify_instance(self, instance, version=1, **kwargs):
@@ -137,14 +166,14 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
     def verify_users(self, index, obj):
         """Verify users."""
         msg = '({}): invalid instance.{}({}) at index({})'
-        user_name = self.username
+        test_username = self.user.username
         for attr in ('creation_user', 'update_user', 'effective_user'):
-            usr = getattr(obj, attr)
+            user = getattr(obj, attr)
             self.assertEqual(
-                usr.username, user_name,
+                user.username, test_username,
                 msg.format(
                     instance_class_name(obj),
-                    attr, usr.username, index))
+                    attr, user.username, index))
 
     def verify_enabled(self, index, obj, expected=True):
         """Verify instance enabled."""
@@ -236,6 +265,11 @@ class VersionedModelTestCase(BaseAppDjangoTestCase):
 
 
 class NamedModelTestCase(VersionedModelTestCase):
+    """Base class for named model unit tests."""
+    NAME_1 = "name_1"
+    NAME_2 = "name_2"
+    NAMES = (NAME_1, NAME_2)
+
     def verify_instances(self, instances,
                          count=1, version=1, **kwargs):
         super(NamedModelTestCase, self).verify_instances(
