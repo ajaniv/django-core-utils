@@ -80,7 +80,8 @@ class VersionedModelApiTestCase(BaseApiTestCase):
         """Verify rest api get request."""
         url = reverse(url_name, args=[instance.id])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK, response.data)
         ref_data = self.instance_to_dict(instance, serializer_class)
         self.assert_equal_dict(ref_data, response.data, excluded)
 
@@ -110,7 +111,8 @@ class VersionedModelApiTestCase(BaseApiTestCase):
 
         url = reverse(url_name, args=[instance.id])
         response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK, response.data)
         expected_data = self.instance_to_dict(instance, serializer_class)
         expected_data.update(data)
 
