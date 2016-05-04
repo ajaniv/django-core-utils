@@ -136,13 +136,13 @@ class VersionedModelApiTestCase(BaseApiTestCase):
         return self.verify_delete(self.url_detail, instance)
 
 
-class NamdedModelApiTestCase(VersionedModelApiTestCase):
+class NamedModelApiTestCase(VersionedModelApiTestCase):
     """Base class for named model api unit tests.
     """
     def post_required_data(self, user=None, site=None):
         """Return named model post request required data."""
-        data = super(NamdedModelApiTestCase, self).post_required_data(user,
-                                                                      site)
+        data = super(NamedModelApiTestCase, self).post_required_data(user,
+                                                                     site)
         data.update(dict(name=self.name))
         return data
 
@@ -150,7 +150,7 @@ class NamdedModelApiTestCase(VersionedModelApiTestCase):
                       expected_name=None, data_format=None):
         """Verify post request for named model instance creation."""
         response, instance = super(
-            NamdedModelApiTestCase, self).verify_create(
+            NamedModelApiTestCase, self).verify_create(
                 url, data, model_class, data_format=data_format)
         if expected_name:
             self.assertEqual(instance.name, expected_name)
