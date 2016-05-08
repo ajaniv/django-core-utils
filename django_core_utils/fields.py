@@ -156,20 +156,19 @@ def ip_address_field(**kwargs):
     return models.GenericIPAddressField(**defaults)
 
 
-def many_to_many_field(to_class, db_table, **kwargs):
+def many_to_many_field(to_class, db_table=None, **kwargs):
     """Return a new instance of many to many model field.
     """
     defaults = dict(
-        db_constraint=True,
-        null=True,
-        blank=True)
+        db_constraint=True)
 
     related_name = kwargs.pop('related_name', None)
     defaults.update(kwargs)
 
-    related_name = (
-        related_name or
-        '{}_set'.format(inflection.camelize(class_name(to_class))))
+    if to_class != "self":
+        related_name = (
+            related_name or
+            '{}_set'.format(inflection.camelize(class_name(to_class))))
 
     return models.ManyToManyField(
         to_class,
