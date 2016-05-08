@@ -200,19 +200,27 @@ class VersionedModelTestCase(BaseModelTestCase):
         """
         pass
 
-    def verify_versioned_model_crud(self, factory_class):
-        """Verify versioned model simple crud operations.
-        """
+    def verify_create(self, factory_class, **kwargs):
+        """Verify instance creation."""
         model_class = factory_class.model_class()
         model_class_name = class_name(model_class)
 
-        instance = factory_class()
+        instance = factory_class(**kwargs)
         self.verify_instance(instance)
         instance.full_clean()
         self.assertEqual(
             1,
             model_class.objects.count(),
             "Missing %s instances after create" % model_class_name)
+        return instance
+
+    def verify_versioned_model_crud(self, factory_class, **kwargs):
+        """Verify versioned model simple crud operations.
+        """
+        instance = self.verify_create(factory_class, **kwargs)
+        model_class = factory_class.model_class()
+        model_class_name = class_name(model_class)
+
         fetched = model_class.objects.get(pk=instance.id)
         fetched.save()
         self.assertEqual(
