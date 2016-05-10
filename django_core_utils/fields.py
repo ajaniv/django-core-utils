@@ -386,22 +386,28 @@ def email_field(**kwargs):
     defaults.update(kwargs)
     return models.EmailField(**defaults)
 
-_im_schemes = ["im", "xmpp"]
+
+# @TODO: make im schemes configurable
+im_schemes = ["aim", "gtalk", "im", "msnim", "skype", "sms", "xmpp", ]
 
 
-def instance_messaging_field(**kwargs):
+class InstantMessagingField(models.URLField):
+    """Instant messaging field class."""
+    default_validators = [validators.URLValidator(schemes=im_schemes)]
+
+
+def instant_messaging_field(**kwargs):
     """Create instance messaging field instance.
     """
     defaults = dict(
         null=False,
-        blank=False,
-        validators=[validators.URLValidator(schemes=_im_schemes)])
+        blank=False)
     defaults.update(kwargs)
-    return url_field(**defaults)
+    return InstantMessagingField(**defaults)
 
 _url_schemes = ['http', 'https', 'ftp', 'ftps']
 _other_schemes = ['tel', 'mailto', 'urn']
-_uri_schemes = _im_schemes + _url_schemes + _other_schemes
+_uri_schemes = im_schemes + _url_schemes + _other_schemes
 
 
 def uri_field(**kwargs):

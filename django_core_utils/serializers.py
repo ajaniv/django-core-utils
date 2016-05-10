@@ -5,14 +5,16 @@
 django_core_utils Django rest framework serializers module.
 """
 from __future__ import absolute_import
-
+from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core import validators
 from rest_framework import serializers
 
 from . import models
 from . import constants
 from .utils import current_site
+from .fields import im_schemes
 
 CREATION_USER = "creation_user"
 EFFECTIVE_USER = "effective_user"
@@ -111,3 +113,16 @@ class PrioritizedModelSerializer(VersionedModelSerializer):
         """Meta class definition."""
         model = models.PrioritizedModel
         fields = VersionedModelSerializer.Meta.fields + ("priority",)
+
+
+class InstantMessagingField(serializers.CharField):
+    """InstantMessaing field class."""
+    default_error_messages = {
+        'invalid': _('Enter a valid URL.')
+    }
+
+    def __init__(self, **kwargs):
+        super(InstantMessagingField, self).__init__(**kwargs)
+        validator = validators.URLValidator(
+            schemes=im_schemes, message=self.error_messages['invalid'])
+        self.validators.append(validator)
