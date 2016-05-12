@@ -8,12 +8,14 @@ designed to foster common field usage and facilitate configuration changes.
 from __future__ import absolute_import
 
 import uuid
+import inspect
 
 import inflection
-from django.contrib.auth.models import User
+
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from macaddress.fields import MACAddressField
 from phonenumber_field.modelfields import PhoneNumberField
@@ -165,7 +167,7 @@ def many_to_many_field(to_class, db_table=None, **kwargs):
     related_name = kwargs.pop('related_name', None)
     defaults.update(kwargs)
 
-    if to_class != "self":
+    if inspect.isclass(to_class):
         related_name = (
             related_name or
             '{}_set'.format(inflection.camelize(class_name(to_class))))
