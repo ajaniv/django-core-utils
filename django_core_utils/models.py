@@ -73,6 +73,8 @@ class VersionedModelManager(models.Manager):
         except self.model.DoesNotExist:
             return None
 
+related_name_base = "%(app_label)s_%(class)s_related_"
+
 
 @python_2_unicode_compatible
 class VersionedModel(models.Model):
@@ -89,19 +91,19 @@ class VersionedModel(models.Model):
 
     # user who created the instance
     creation_user = fields.user_field(
-        related_name="%(app_label)s_%(class)s_related_creation_user")
+        related_name=related_name_base + "creation_user")
 
     # user who triggered the instance update
     update_user = fields.user_field(
-        related_name="%(app_label)s_%(class)s_related_update_user")
+        related_name=related_name_base + "update_user")
 
     # user on whose behalf change is made
     effective_user = fields.user_field(
-        related_name="%(app_label)s_%(class)s_related_effective_user")
+        related_name=related_name_base + "effective_user")
 
     site = fields.foreign_key_field(
         Site,
-        related_name="%(app_label)s_%(class)s_related_site")
+        related_name=related_name_base + "site")
 
     objects = VersionedModelManager()
 
