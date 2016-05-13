@@ -189,12 +189,12 @@ class OptionalNamedModel(BasedNamedModel):
         abstract = True
 
 
-class PrioritizedModel(models.Model):
+class PrioritizedModel(VersionedModel):
     """An abstract base class for models requiring priority.
     Associate a priority with an instance.
     """
-    class Meta(object):
+    class Meta(VersionedModel.Meta):
         """Model meta class declaration."""
         abstract = True
 
-    priority = fields.priority_field()
+    priority = fields.priority_field(blank=True, null=True)
