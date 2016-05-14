@@ -15,9 +15,8 @@ from django.contrib.auth.models import Group, User
 
 from python_core_utils.core import dict_merge
 
-from .models import NamedModel, OptionalNamedModel
-from .text import (named_model_help_texts, named_model_labels,
-                   versioned_model_help_texts, versioned_model_labels)
+from . import models
+from . import text
 
 
 class VersionedModelAdminForm(forms.ModelForm):
@@ -25,8 +24,9 @@ class VersionedModelAdminForm(forms.ModelForm):
     """
     class Meta:
         """Meta class declaration."""
-        labels = versioned_model_labels
-        help_texts = versioned_model_help_texts
+        model = models.VersionedModel
+        labels = text.versioned_model_labels
+        help_texts = text.versioned_model_help_texts
         fields = '__all__'
 
     @classmethod
@@ -68,27 +68,27 @@ class BasedNamedModelAdminForm(VersionedModelAdminForm):
         }
         labels = dict_merge(
             VersionedModelAdminForm.Meta.labels,
-            named_model_labels)
+            text.named_model_labels)
 
         help_texts = dict_merge(
             VersionedModelAdminForm.Meta.help_texts,
-            named_model_help_texts)
+            text.named_model_help_texts)
 
 
 class NamedModelAdminForm(BasedNamedModelAdminForm):
     """Named model admin form class.
     """
-    class Meta(VersionedModelAdminForm.Meta):
+    class Meta(BasedNamedModelAdminForm.Meta):
         """Meta class declaration."""
-        model = NamedModel
+        model = models.NamedModel
 
 
 class OptionalNamedModelAdminForm(BasedNamedModelAdminForm):
     """Optional named model admin form class.
     """
-    class Meta(VersionedModelAdminForm.Meta):
+    class Meta(BasedNamedModelAdminForm.Meta):
         """Meta class declaration."""
-        model = OptionalNamedModel
+        model = models.OptionalNamedModel
 
 
 class GroupAdminForm(forms.ModelForm):
@@ -126,3 +126,19 @@ class GroupAdminForm(forms.ModelForm):
                 group.user_set = self.cleaned_data['users']
             self.save_m2m = new_save_m2m
         return group
+
+
+class PrioritizedModelAdminForm(VersionedModelAdminForm):
+    """Prioritized model admin form class.
+    """
+    class Meta(VersionedModelAdminForm.Meta):
+        """Meta class declaration."""
+        models = models.PrioritizedModel
+        labels = dict_merge(
+            VersionedModelAdminForm.Meta.labels,
+            text.prioritized_model_labels)
+
+        help_texts = dict_merge(
+            VersionedModelAdminForm.Meta.help_texts,
+            text.prioritized_model_help_texts)
+        fields = '__all__'
