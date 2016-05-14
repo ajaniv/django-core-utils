@@ -16,8 +16,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from python_core_utils.core import class_name
 
 from . import constants
-from .forms import (GroupAdminForm, NamedModelAdminForm,
-                    OptionalNamedModelAdminForm, VersionedModelAdminForm)
+from . import forms
 
 DISPLAY_NAME_SIZE = 32
 
@@ -58,6 +57,11 @@ def admin_site_register(clasz, base_classes, attrs):
 def name_model_fields():
     """return named model fields"""
     return (("name",), ("alias",), ("description",))
+
+
+def prioritized_model_fields():
+    """return prioritized model fields"""
+    return (("priority",), )
 
 
 def named_model_field_sets(model_name):
@@ -131,13 +135,31 @@ class GroupAdmin(GroupAdmin):
     """
     Override GroupAdmin to allow user management
     """
-    form = GroupAdminForm
+    form = forms.GroupAdminForm
 
 
-class VersionedModelAdmin(admin.ModelAdmin):
+class ModelAdminMixin(object):
+    """ModelAdmin mixin class."""
+    def prepare(self, request, obj, form, change):
+        """Subclass hook to prepare for saving.
+        """
+        self.prepare_system_fields(request, obj,
+                                   form, change)
+
+    def prepare_system_fields(self, request, obj, form, change):
+        """Populate system related fields.
+        """
+        if obj.id is None:
+            obj.creation_user = request.user
+            obj.site = get_current_site(request)
+        obj.update_user = request.user
+        obj.effective_user = request.user
+
+
+class VersionedModelAdmin(ModelAdminMixin, admin.ModelAdmin):
     """Versioned model admin class.
     """
-    form = VersionedModelAdminForm
+    form = forms.VersionedModelAdminForm
     list_display = ("id", "version", "update_time", "update_user")
     list_filter = ("update_time",)
     date_hierarchy = "update_time"
@@ -156,21 +178,6 @@ class VersionedModelAdmin(admin.ModelAdmin):
         self.prepare(request, obj, form, change)
         super(VersionedModelAdmin, self).save_model(request, obj, form, change)
 
-    def prepare(self, request, obj, form, change):
-        """Subclass hook to prepare for saving.
-        """
-        self.prepare_system_fields(request, obj,
-                                   form, change)
-
-    def prepare_system_fields(self, request, obj, form, change):
-        """Populate system related fields.
-        """
-        if obj.id is None:
-            obj.creation_user = request.user
-            obj.site = get_current_site(request)
-        obj.update_user = request.user
-        obj.effective_user = request.user
-
     @classmethod
     def get_field_sets(clasz):
         """return field set."""
@@ -183,7 +190,7 @@ class BaseNamedModelAdmin(VersionedModelAdmin):
     """
     Base named model admin class.
     """
-    form = NamedModelAdminForm
+    form = forms.NamedModelAdminForm
     list_display = ("id", "get_name", "get_alias",
                     "version", "update_time", "update_user")
     list_display_links = ("id", "get_name", )
@@ -214,13 +221,21 @@ class BaseNamedModelAdmin(VersionedModelAdmin):
 
 class NamedModelAdmin(BaseNamedModelAdmin):
     """
-    Named model admin class.
+    NamedModel admin class.
     """
-    form = NamedModelAdminForm
+    form = forms.NamedModelAdminForm
 
 
 class OptionalNamedModelAdmin(BaseNamedModelAdmin):
     """
-    Optional named model admin class.
+    OptionalNamedModel admin class.
     """
-    form = OptionalNamedModelAdminForm
+    form = forms.OptionalNamedModelAdminForm
+
+
+class PrioritizedModelAdmin(VersionedModelAdmin):
+    """
+    PrioritizedModel admin class.
+    """
+    form = forms.PrioritizedModelAdminForm
+    list_display = ("id", "priority", "version", "update_time", "update_user")
