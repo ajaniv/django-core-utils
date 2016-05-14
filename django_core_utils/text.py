@@ -53,3 +53,11 @@ named_model_help_texts = {
     "description": _("Instance description."),
     "name": _("Instance name."),
     }
+
+prioritized_model_labels = {
+    "priority": _("Priority"),
+    }
+
+prioritized_model_help_texts = {
+    "priority": _("Instance priority."),
+    }
