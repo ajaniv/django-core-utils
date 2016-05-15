@@ -9,6 +9,7 @@ django_core_utils form  utilities.
 """
 from __future__ import absolute_import
 
+from django.core import validators
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group, User
@@ -17,6 +18,7 @@ from python_core_utils.core import dict_merge
 
 from . import models
 from . import text
+from . import fields
 
 
 class VersionedModelAdminForm(forms.ModelForm):
@@ -142,3 +144,8 @@ class PrioritizedModelAdminForm(VersionedModelAdminForm):
             VersionedModelAdminForm.Meta.help_texts,
             text.prioritized_model_help_texts)
         fields = '__all__'
+
+
+class InstantMessagingField(forms.URLField):
+    """Instant messaging forms field class."""
+    default_validators = [validators.URLValidator(schemes=fields.im_schemes)]
