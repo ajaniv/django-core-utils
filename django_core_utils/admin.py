@@ -170,6 +170,8 @@ class VersionedModelAdmin(ModelAdminMixin, admin.ModelAdmin):
         "uuid", "version")
     ordering = ("id",)
 
+    limit_qs_to_request_user = False
+
     def save_model(self, request, obj, form, change):
         """Given a model instance save it to the database.
 
@@ -184,6 +186,14 @@ class VersionedModelAdmin(ModelAdminMixin, admin.ModelAdmin):
         return (detail_field_set(),
                 audit_field_set(),
                 system_field_set())
+
+    def get_queryset(self, request):
+        """Return restricted querty set"""
+        qs = super(VersionedModelAdmin, self).get_queryset(request)
+        if request.user.is_superuser or not self.limit_qs_to_request_user:
+            return qs
+
+        return qs.filter(creation_user=request.user)
 
 
 class BaseNamedModelAdmin(VersionedModelAdmin):
