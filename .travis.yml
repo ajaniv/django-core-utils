@@ -9,8 +9,8 @@ sudo: false
 python: '2.7'
 
 env:
-  - TOX_ENV=py27-django18
   - TOX_ENV=py27-django19
+  - TOX_ENV=py27-django110
 
 matrix:
   fast_finish: true
@@ -18,7 +18,7 @@ matrix:
     - python: '3.5'
       env: TOX_ENV=py35-django19
     - python: '3.5'
-      env: TOX_ENV=py35-django18
+      env: TOX_ENV=py35-django110
 
        
 install:

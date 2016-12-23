@@ -1,0 +1,3 @@
+# Common python project dependencies
+Pillow==3.4.2
+python-dateutil==2.6.0

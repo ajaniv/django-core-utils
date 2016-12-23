@@ -1,4 +1,10 @@
 # tox environment requirements file
--r common.txt
--r code_style.txt
--r testing.txt
+
+-r common/project.txt
+-r django/extras.txt
+-r django/rest_framework.txt
+-r django/dev_tools.txt
+-r django/testing.txt
+-r common/coding_style.txt
+-r common/documentation.txt
+-r common/git_projects.txt

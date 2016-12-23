@@ -20,7 +20,7 @@ _git_url_root = 'git+ssh://git@github.com/ajaniv/'
 
 setup(
     name='django-core-utils',
-    version='0.1.0',
+    version='0.2.0',
     include_package_data=True,
     license='BSD License',  # example license
     description='A collection of reusable low-level Django components',
@@ -46,11 +46,11 @@ setup(
         'django-macaddress>=1.3.2',
         'django-phonenumber-field>=1.0.0',
         'django-timezone-field>=1.3',
-        'phonenumbers==7.2.6',
+        'phonenumbers>=7.2.6',
         'python-core-utils',
     ],
     dependency_links=[
-        _git_url_root + 'python-core-utils@v0.1.0#egg=python-core-utils'
+        _git_url_root + 'python-core-utils@v0.2.0#egg=python-core-utils'
     ],
     extras_require={
         'dev': ['check-manifest'],

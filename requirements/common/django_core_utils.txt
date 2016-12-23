@@ -1,0 +1,6 @@
+# django_core_utils project specific requirements
+Babel==2.3.4
+inflection==0.3.1
+netaddr==0.7.18
+phonenumbers==8.0.0
+pytz==2016.10
