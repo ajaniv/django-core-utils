@@ -1,0 +1,2 @@
+# git project dependencies
+git+git://github.com/ajaniv/python-core-utils@v0.2.0#egg=python-core-utils

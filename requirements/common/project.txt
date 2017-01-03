@@ -1,0 +1,3 @@
+# project specific requirements
+-r python_core_utils.txt
+-r django_core_utils.txt
