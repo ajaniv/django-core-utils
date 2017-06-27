@@ -10,7 +10,7 @@ python: '2.7'
 
 env:
   - TOX_ENV=py27-django19
-  - TOX_ENV=py27-django110
+  - TOX_ENV=py27-django103
 
 matrix:
   fast_finish: true
@@ -18,7 +18,9 @@ matrix:
     - python: '3.5'
       env: TOX_ENV=py35-django19
     - python: '3.5'
-      env: TOX_ENV=py35-django110
+      env: TOX_ENV=py35-django103
+    - python: '3.6'
+      env: TOX_ENV=py36-django112
 
        
 install:
