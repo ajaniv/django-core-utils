@@ -10,7 +10,7 @@ python: '2.7'
 
 env:
   - TOX_ENV=py27-django19
-  - TOX_ENV=py27-django110
+  - TOX_ENV=py27-django103
 
 matrix:
   fast_finish: true
