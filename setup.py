@@ -20,7 +20,7 @@ _git_url_root = 'git+ssh://git@github.com/ajaniv/'
 
 setup(
     name='django-core-utils',
-    version='0.2.0',
+    version='0.3.0',
     include_package_data=True,
     license='BSD License',  # example license
     description='A collection of reusable low-level Django components',
@@ -30,12 +30,13 @@ setup(
     author_email='amnon.janiv@ondalear.com',
     classifiers=[
         'Environment :: Web Environment',
-        'Framework :: Django :: 1.9',
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
@@ -50,7 +51,7 @@ setup(
         'python-core-utils',
     ],
     dependency_links=[
-        _git_url_root + 'python-core-utils@v0.2.0#egg=python-core-utils'
+        _git_url_root + 'python-core-utils@v0.3.0#egg=python-core-utils'
     ],
     extras_require={
         'dev': ['check-manifest'],
