@@ -151,3 +151,60 @@ class GeoValidationTestCase(TestCase):
                                "longitude validation error %s" % value)
         self.assertRaises(ValidationError,
                           fields.longitude_validator, longitude_invalid)
+
+
+class PercentValidationTestCase(TestCase):
+    """Percent validation test class.
+    """
+
+    def test_percent_validation(self):
+        percent_valid = 0.0
+        percent_invalid = 100.05
+        value = fields.percent_validator(percent_valid)
+        self.assertAlmostEqual(value, percent_valid,
+                               "percent validation error %s" % value)
+        self.assertRaises(ValidationError,
+                          fields.percent_validator, percent_invalid)
+
+
+class JsonFieldTestCase(FieldTestCase):
+    """
+    Json field unit test class.
+    """
+    def test_json_field_create(self):
+        blank = True
+        null = True
+        default = dict(a=1)
+
+        field = self._assert_create(fields.json_field,
+                                    blank=blank,
+                                    null=null,
+                                    default=default)
+        self.assertEqual(field.blank, blank)
+        self.assertEqual(field.null, null)
+        self.assertEqual(field.default, default)
+
+
+class MoneyFieldTestCase(FieldTestCase):
+    """
+    Money field unit test class.
+    """
+    def test_money_field_create(self):
+        blank = True
+        null = True
+        max_digits = 4
+        decimal_places = 2
+        default_currency = 'EUR'
+
+        field = self._assert_create(fields.money_field,
+                                    blank=blank,
+                                    null=null,
+                                    max_digits=max_digits,
+                                    decimal_places=decimal_places,
+                                    default_currency=default_currency)
+
+        self.assertEqual(field.blank, blank)
+        self.assertEqual(field.null, null)
+        self.assertEqual(field.max_digits, max_digits)
+        self.assertEqual(field.decimal_places, decimal_places)
+        self.assertEqual(field.default_currency, default_currency)
