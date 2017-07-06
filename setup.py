@@ -20,7 +20,7 @@ _git_url_root = 'git+ssh://git@github.com/ajaniv/'
 
 setup(
     name='django-core-utils',
-    version='0.3.0',
+    version='0.4.0',
     include_package_data=True,
     license='BSD License',  # example license
     description='A collection of reusable low-level Django components',
@@ -30,6 +30,7 @@ setup(
     author_email='amnon.janiv@ondalear.com',
     classifiers=[
         'Environment :: Web Environment',
+        'Framework :: Django :: 1.10',
         'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -42,13 +43,16 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
         'inflection>=0.3.1',
-        'Django>=1.9.0',
+        'Django>=1.10.0',
         'djangorestframework>=3.3.3',
         'django-macaddress>=1.3.2',
+        'django-money>=0.11.4',
         'django-phonenumber-field>=1.0.0',
         'django-timezone-field>=1.3',
+        'jsonfield>=2.0.2',
         'phonenumbers>=7.2.6',
         'python-core-utils',
+        'py-moneyed>=0.7.0'
     ],
     dependency_links=[
         _git_url_root + 'python-core-utils@v0.3.0#egg=python-core-utils'

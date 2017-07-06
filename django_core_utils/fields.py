@@ -20,6 +20,9 @@ from django.utils.translation import gettext as _
 from macaddress.fields import MACAddressField
 from phonenumber_field.modelfields import PhoneNumberField
 from timezone_field import TimeZoneField
+from jsonfield import JSONField
+from djmoney.models.fields import MoneyField
+import moneyed
 
 from python_core_utils.core import class_name
 
@@ -249,6 +252,17 @@ def annotation_field(**kwargs):
     return text_field(**defaults)
 
 
+def comments_field(**kwargs):
+    """Return a new instance of comments model field.
+    """
+    defaults = dict(
+        blank=True,
+        null=True,
+        unique=False)
+    defaults.update(kwargs)
+    return text_field(**defaults)
+
+
 def description_field(**kwargs):
     """Return a new instance of description model field.
     """
@@ -432,3 +446,44 @@ def priority_field(**kwargs):
         default=0)
     defaults.update(kwargs)
     return models.PositiveSmallIntegerField(**defaults)
+
+
+def percent_validator(value):
+    """Perform percent validation.
+    """
+    valid = 0 <= value <= 100
+    if not valid:
+        raise ValidationError(_('value not in range of 0 <= value <= 100'))
+    return value
+
+
+def percentage_field(**kwargs):
+    """Create a percentage field instance.
+    """
+    defaults = dict(validators=[percent_validator])
+    defaults.update(kwargs)
+    return floating_point_field(**defaults)
+
+
+def json_field(**kwargs):
+    """Create a json field instance.
+    """
+    defaults = dict(
+        null=False,
+        blank=False)
+    defaults.update(kwargs)
+    return JSONField(**defaults)
+
+
+def money_field(**kwargs):
+    """Create a money field instance.
+    """
+    defaults = dict(
+        null=False,
+        blank=False,
+        max_digits=10,
+        decimal_places=2,
+        default=moneyed.Money('0.00', "USD"),
+        default_currency="USD")
+    defaults.update(kwargs)
+    return MoneyField(**defaults)
