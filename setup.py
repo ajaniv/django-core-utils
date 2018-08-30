@@ -38,6 +38,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
@@ -55,7 +56,7 @@ setup(
         'py-moneyed>=0.7.0'
     ],
     dependency_links=[
-        _git_url_root + 'python-core-utils@v0.3.0#egg=python-core-utils'
+        _git_url_root + 'python-core-utils@v0.4.0#egg=python-core-utils'
     ],
     extras_require={
         'dev': ['check-manifest'],

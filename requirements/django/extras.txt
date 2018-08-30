@@ -1,7 +1,7 @@
 # Django common requirements
-django-macaddress==1.4.1
-django-phonenumber-field==1.3.0
-django-timezone-field==2.0
+django-macaddress==1.5.0
+django-phonenumber-field==2.0.1
+django-timezone-field==2.1
 jsonfield==2.0.2
-django-money==0.11.4
+django-money==0.14.3
 py-moneyed==0.7.0
