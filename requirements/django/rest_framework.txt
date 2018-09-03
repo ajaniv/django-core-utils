@@ -1,7 +1,7 @@
 # django rest framework requirements
-djangorestframework==3.6.3
-django-filter==1.0.4
-django-crispy-forms==1.6.1
-django-guardian==1.4.8
-django-extra-fields==0.9
+djangorestframework==3.8.2
+django-filter==2.0.0
+django-crispy-forms==1.7.2
+django-guardian==1.4.9
+django-extra-fields==1.0.0
 httpie==0.9.9
