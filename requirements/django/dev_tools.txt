@@ -1,7 +1,7 @@
 # dev tools
 check-manifest==0.37
 django-extensions==2.1.2
-django-debug-toolbar==1.9.1
+django-debug-toolbar==1.10
 six==1.11.0
 #pygraphviz==1.3rc1
 tox==3.2.1
