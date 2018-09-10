@@ -3,7 +3,7 @@
     :synopsis: API Unit test utilities module.
 API Unit test utilities module.
 """
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -15,6 +15,7 @@ class BaseApiTestCase(TestCaseMixin, APITestCase):
     def setUp(self):
         APITestCase.setUp(self)
         TestCaseMixin.setUp(self)
+        
 
     def tearDown(self):
         TestCaseMixin.tearDown(self)
@@ -39,6 +40,9 @@ class VersionedModelApiTestCase(BaseApiTestCase):
         self.assertTrue(self.client.login(username=self.TEST_SUPER_USER_NAME,
                         password=self.TEST_PASSWORD),
                         'api client login failed')
+        #@ TODO: with django 2.1.1 user cannot be derived from session by drf
+        self.client.force_authenticate(user=self.super_user)
+
 
     def tearDown(self):
         self.client.logout()
