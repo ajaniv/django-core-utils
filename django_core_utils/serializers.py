@@ -74,8 +74,8 @@ class VersionedModelSerializer(serializers.ModelSerializer):
         attrs = self._add_missing(attrs)
         import copy
         # @TODO: with Django 2.1.1 and Python 3.7
-        # require merging of attributes with instance to 
-        # pass validation - root cause 
+        # require merging of attributes with instance to
+        # pass validation - root cause
         # is not clear; could be application error
         if self.partial:
             instance = copy.deepcopy(self.instance)
