@@ -72,10 +72,19 @@ class VersionedModelSerializer(serializers.ModelSerializer):
         """Perform cross field validation.
         """
         attrs = self._add_missing(attrs)
-
-        # @TODO: does not feel correct to create an
-        # instance in order to reuse the model validation.
-        instance = self.Meta.model(**attrs)
+        import copy
+        # @TODO: with Django 2.1.1 and Python 3.7
+        # require merging of attributes with instance to 
+        # pass validation - root cause 
+        # is not clear; could be application error
+        if self.partial:
+            instance = copy.deepcopy(self.instance)
+            for key in attrs.keys():
+                setattr(instance, key, attrs[key])
+        else:
+            # @TODO: does not feel correct to create an
+            # instance in order to reuse the model validation.
+            instance = self.Meta.model(**attrs)
         instance.clean()
         return attrs
 
