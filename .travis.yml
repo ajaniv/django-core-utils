@@ -10,7 +10,7 @@ python: '3.6'
 
 env:
   - TOXENV=py36-django11115
-  - TOXENV=py36-django211
+  - TOXENV=py36-django217
 
 matrix:
   fast_finish: true
@@ -20,9 +20,9 @@ matrix:
     - python: '3.5'
       env: TOXENV=py35-django11115
     - python: '3.5'
-      env: TOXENV=py35-django211
+      env: TOXENV=py35-django217
     - python: '3.7'
-      env: TOXENV=py37-django211
+      env: TOXENV=py37-django217
       dist: xenial
       sudo: true
 
