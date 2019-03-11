@@ -20,7 +20,7 @@ _git_url_root = 'git+ssh://git@github.com/ajaniv/'
 
 setup(
     name='django-core-utils',
-    version='0.5.0',
+    version='0.5.1',
     include_package_data=True,
     license='BSD License',  # example license
     description='A collection of reusable low-level Django components',
